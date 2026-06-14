@@ -98,6 +98,7 @@ const SummaryCard = ({
     );
 };
 
+// Hiển thị trang tổng quan với số liệu thống kê, biểu đồ và lịch hẹn theo ngày.
 export default function DashboardPage() {
     const { user } = useAuth();
 
@@ -109,9 +110,12 @@ export default function DashboardPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
+    // Tính tổng số ngày của một tháng theo năm và tháng được truyền vào.
     const getDaysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate();
+    // Lấy thứ của ngày đầu tiên trong tháng để căn lịch đúng cột.
     const getFirstDayOfMonth = (year: number, month: number) => new Date(year, month, 1).getDay();
 
+    // Tạo danh sách ngày hiển thị cho lưới lịch, gồm cả ngày bù từ tháng trước và tháng sau.
     const renderCalendarDays = () => {
         const year = currentMonth.getFullYear();
         const month = currentMonth.getMonth();
@@ -136,6 +140,7 @@ export default function DashboardPage() {
 
         return days;
     };
+    // Gọi API để lấy dữ liệu thống kê và lịch hẹn theo ngày đang chọn.
     const fetchChartData = useCallback(async (isBackground = false) => {
         if (!isBackground) setLoading(true);
         try {

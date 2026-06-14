@@ -50,6 +50,7 @@ function SmartDashboard() {
   return <Navigate to="/profile" replace />;
 }
 
+// Khởi tạo toàn bộ hệ thống route của ứng dụng quản trị.
 export default function App() {
   return (
     <Routes>

@@ -8,13 +8,6 @@ import { t } from '../../utils/i18n';
 import { HiOutlinePlus, HiOutlinePencil, HiOutlineTrash } from 'react-icons/hi2';
 import { useAuth } from '../../store/AuthContext';
 
-/**
- * FILE: UserPage.tsx
- * MÔ TẢ: Trang quản lý Người dùng hệ thống.
- * Cho phép Admin/Staff quản lý toàn bộ tài khoản (Admin, Doctor, Patient, Staff).
- * Hỗ trợ các thao tác: Thêm mới, Chỉnh sửa thông tin, Phân quyền (Role) và Khóa/Mở tài khoản (Status).
- */
-
 interface User {
     id: number;
     email: string;
@@ -28,54 +21,46 @@ interface User {
     createdAt: string;
 }
 
-
-// Khởi tạo form trống
 const emptyForm = { email: '', password: '', fullName: '', phone: '', gender: '', roleName: '', status: 'ACTIVE' };
 
 export default function UserPage() {
-    // --- 1. KHỞI TẠO STATE & KIỂM TRA QUYỀN HẠN ---
-    const { isAdmin } = useAuth(); // Chỉ Admin và Staff mới có quyền truy cập/thao tác tại đây
-    const [users, setUsers] = useState<User[]>([]); // Danh sách người dùng
+    const { isAdmin } = useAuth();
+    const [users, setUsers] = useState<User[]>([]);
 
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [editingId, setEditingId] = useState<number | null>(null);
-    
+
     const [form, setForm] = useState(emptyForm);
     const [deleteId, setDeleteId] = useState<number | null>(null);
 
-    /**
-     * HÀM: fetchData
-     * MÔ TẢ: Tải dữ liệu người dùng và danh sách các Role hiện có trong hệ thống.
-     */
     const fetchData = async () => {
         try {
             const t = Date.now();
             const usersRes = await api.get(`/users?t=${t}`);
             setUsers(usersRes.data);
-        } catch { 
-            toast.error('Không thể tải danh sách người dùng'); 
+        } catch {
+            toast.error('Không thể tải danh sách người dùng');
         }
-        finally { 
-            setLoading(false); 
+        finally {
+            setLoading(false);
         }
     };
 
     useEffect(() => { fetchData(); }, []);
 
-    // Mở Modal để tạo mới tài khoản
     const openCreate = () => { setForm(emptyForm); setEditingId(null); setShowModal(true); };
 
     // Mở Modal để chỉnh sửa tài khoản đã chọn
     const openEdit = (u: User) => {
-        setForm({ 
-            email: u.email, 
-            password: '', 
-            fullName: u.fullName || '', 
-            phone: u.phone || '', 
-            gender: u.gender || '', 
-            roleName: u.roleName || '', 
-            status: u.status || 'ACTIVE' 
+        setForm({
+            email: u.email,
+            password: '',
+            fullName: u.fullName || '',
+            phone: u.phone || '',
+            gender: u.gender || '',
+            roleName: u.roleName || '',
+            status: u.status || 'ACTIVE'
         });
         setEditingId(u.id);
         setShowModal(true);
@@ -88,12 +73,12 @@ export default function UserPage() {
     const handleSubmit = async () => {
         try {
             // Chuẩn bị dữ liệu gửi đi (payload), chuyển roleId sang số và chỉ gửi password nếu có nhập
-            const payload = { 
-                ...form, 
-                roleName: form.roleName || undefined, 
-                password: form.password || undefined 
+            const payload = {
+                ...form,
+                roleName: form.roleName || undefined,
+                password: form.password || undefined
             };
-            
+
             if (editingId) {
                 await api.put(`/users/${editingId}`, payload);
                 toast.success('Cập nhật người dùng thành công');
@@ -103,8 +88,8 @@ export default function UserPage() {
             }
             setShowModal(false);
             fetchData();
-        } catch (err: any) { 
-            toast.error(err.response?.data?.message || 'Có lỗi xảy ra khi lưu dữ liệu'); 
+        } catch (err: any) {
+            toast.error(err.response?.data?.message || 'Có lỗi xảy ra khi lưu dữ liệu');
         }
     };
 
@@ -119,8 +104,8 @@ export default function UserPage() {
             toast.success('Đã xóa người dùng');
             setDeleteId(null);
             fetchData();
-        } catch (err: any) { 
-            toast.error(err.response?.data?.message || 'Không thể xóa người dùng này'); 
+        } catch (err: any) {
+            toast.error(err.response?.data?.message || 'Không thể xóa người dùng này');
         }
     };
 
@@ -212,7 +197,7 @@ export default function UserPage() {
                                             <div className="table-actions">
                                                 {/* Chỉnh sửa: Cấm Admin chỉnh sửa */}
                                                 <button className="btn-icon" onClick={() => openEdit(u)} title="Sửa người dùng"><HiOutlinePencil /></button>
-                                                
+
                                                 {/* Xóa: Ẩn đối với Admin. Role khác tự hiển thị qua phân quyền (CÒN ROLE KIA ADMIN TỰ TÍCH SAU) */}
                                                 <button className="btn-icon" onClick={() => setDeleteId(u.id)} title="Xóa người dùng"><HiOutlineTrash /></button>
                                             </div>
@@ -234,13 +219,13 @@ export default function UserPage() {
                         <div className="form-group"><label>{"Họ và tên đầy đủ"}</label><input name="fullName" className="form-control" value={form.fullName} onChange={handleChange} placeholder="Ví dụ: Nguyễn Văn A" /></div>
                         <div className="form-group">
                             <label>{"Email"}</label>
-                            <input 
-                                name="email" 
-                                type="email" 
-                                className="form-control" 
-                                value={form.email} 
-                                onChange={handleChange} 
-                                placeholder="example@gmail.com" 
+                            <input
+                                name="email"
+                                type="email"
+                                className="form-control"
+                                value={form.email}
+                                onChange={handleChange}
+                                placeholder="example@gmail.com"
                                 required
                                 pattern="^[a-zA-Z0-9._%+-]+@gmail\.com$"
                             />
@@ -248,17 +233,17 @@ export default function UserPage() {
                     </div>
                     {/* Mật khẩu (Chỉ hiện khi tạo mới) */}
                     {!editingId && <div className="form-group"><label>{"Mật khẩu khởi tạo"}</label><input name="password" type="password" className="form-control" value={form.password} onChange={handleChange} placeholder="Tối thiểu 6 ký tự" /></div>}
-                    
+
                     <div className="form-row">
                         {/* Số điện thoại (Bắt buộc 10 chữ số) */}
                         <div className="form-group">
                             <label>{"Số điện thoại liên hệ"}</label>
-                            <input 
-                                name="phone" 
-                                className="form-control" 
-                                value={form.phone} 
-                                onChange={handleChange} 
-                                placeholder="09xxxxxxxx" 
+                            <input
+                                name="phone"
+                                className="form-control"
+                                value={form.phone}
+                                onChange={handleChange}
+                                placeholder="09xxxxxxxx"
                                 required
                                 pattern="\d{10}"
                             />

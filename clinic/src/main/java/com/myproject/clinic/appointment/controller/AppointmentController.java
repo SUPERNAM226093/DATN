@@ -9,9 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * Lớp điều khiển (Controller) xử lý các yêu cầu HTTP API cho thực thể Appointment.
- */
 @RestController
 @RequestMapping("/api/appointments")
 @RequiredArgsConstructor
@@ -19,9 +16,6 @@ public class AppointmentController {
 
     private final AppointmentService appointmentService;
 
-    /**
-     * Lấy danh sách tất cả các bản ghi.
-     */
     @GetMapping
     public ResponseEntity<List<AppointmentResponse>> getAll() {
         return ResponseEntity.ok(appointmentService.findAll());

@@ -13,6 +13,7 @@ export const Logger = {
     }
 };
 
+// Lưu bản ghi log vào localStorage để tiện tra cứu sau này.
 function saveLog(level: string, message: string, data: any) {
     try {
         const logs = JSON.parse(localStorage.getItem('app_logs') || '[]');
