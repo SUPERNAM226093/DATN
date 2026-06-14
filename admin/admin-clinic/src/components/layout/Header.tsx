@@ -39,12 +39,12 @@ export default function Header() {
                 {/* Hiển thị nút tải PWA nếu đáp ứng đủ điều kiện cài đặt và chưa chạy ở dạng Standalone */}
                 {!isStandalone && isInstallable && (
                     <button 
-                        className="btn-icon install-btn" 
+                        className="install-app-btn" 
                         onClick={installApp} 
                         title={"Tải ứng dụng quản lý"}
-                        style={{ marginRight: '1rem', color: '#f26522' }}
                     >
                         <HiOutlineArrowDownTray size={20} />
+                        <span>Cài đặt</span>
                     </button>
                 )}
 

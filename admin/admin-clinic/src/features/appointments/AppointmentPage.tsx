@@ -8,20 +8,12 @@ import { HiOutlinePlus, HiOutlinePencil, HiOutlineTrash } from 'react-icons/hi2'
 import { useAuth } from '../../store/AuthContext';
 import { t } from '../../utils/i18n';
 
-/**
- * FILE: AppointmentPage.tsx
- * MÔ TẢ: Trang quản lý lịch hẹn (Appointment).
- * Dành cho Admin để quản lý tất cả lịch hẹn hoặc Doctor để quản lý lịch hẹn của chính mình.
- */
-
 interface Appointment { id: number; patientId: number; patientName: string; doctorId: number; doctorName: string; serviceName: string; appointmentDate: string; appointmentTime: string; status: string; note: string; createdAt: string; }
 interface DoctorOpt { id: number; fullName: string; }
 interface UserOpt { id: number; fullName: string; email: string; }
 
-// Khởi tạo form trống cho việc thêm mới
 const emptyForm = { patientId: '', doctorId: '', serviceId: '', scheduleId: '', appointmentDate: '', appointmentTime: '', status: 'PENDING', note: '' };
 
-// Định nghĩa màu sắc hiển thị cho từng trạng thái lịch hẹn
 const statusColors: Record<string, string> = { PENDING: 'warning', CONFIRMED: 'info', COMPLETED: 'success', CANCELLED: 'danger' };
 const lockedFieldStyle: CSSProperties = {
     backgroundColor: '#f3f4f6',
@@ -30,14 +22,13 @@ const lockedFieldStyle: CSSProperties = {
 };
 
 export default function AppointmentPage() {
-    // --- 1. KHỞI TẠO STATE ---
     const [items, setItems] = useState<Appointment[]>([]); // Danh sách lịch hẹn
     const [doctors, setDoctors] = useState<DoctorOpt[]>([]); // Danh sách bác sĩ (để chọn khi đặt lịch)
     const [patients, setPatients] = useState<UserOpt[]>([]); // Danh sách bệnh nhân
     const [loading, setLoading] = useState(true); // Trạng thái tải dữ liệu
     const [showModal, setShowModal] = useState(false); // Ẩn/hiện Modal thêm/sửa
     const [editingId, setEditingId] = useState<number | null>(null); // ID của lịch hẹn đang chỉnh sửa
-    
+
     const [form, setForm] = useState(emptyForm); // Dữ liệu form
     const [deleteId, setDeleteId] = useState<number | null>(null); // ID của lịch hẹn đang chờ xóa
     const { isDoctor, isAdmin } = useAuth(); // Lấy thông tin quyền hạn của người dùng đang đăng nhập
@@ -45,16 +36,11 @@ export default function AppointmentPage() {
     const canAdd = isAdmin;
     const canDelete = isAdmin;
     const isEditing = editingId !== null;
-
-    /**
-     * HÀM: fetchData
-     * MÔ TẢ: Gọi đồng thời nhiều API để lấy toàn bộ dữ liệu cần thiết cho trang.
-     */
     const fetchData = async () => {
         try {
             const endpoints: Promise<any>[] = [
-                api.get('/appointments'), 
-                api.get('/doctors'), 
+                api.get('/appointments'),
+                api.get('/doctors'),
                 api.get('/services'),
                 api.get('/users')
             ];
@@ -63,11 +49,11 @@ export default function AppointmentPage() {
             setItems(results[0].data);
             setDoctors(results[1].data);
             setPatients(results[3].data);
-        } catch (err) { 
+        } catch (err) {
             console.error(err);
-            toast.error('Không thể tải dữ liệu'); 
-        } finally { 
-            setLoading(false); 
+            toast.error('Không thể tải dữ liệu');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -75,10 +61,10 @@ export default function AppointmentPage() {
     useEffect(() => { fetchData(); }, []);
 
     // Mở modal để tạo mới lịch hẹn
-    const openCreate = () => { 
-        setForm({ ...emptyForm, patientId: '' }); 
-        setEditingId(null); 
-        setShowModal(true); 
+    const openCreate = () => {
+        setForm({ ...emptyForm, patientId: '' });
+        setEditingId(null);
+        setShowModal(true);
     };
 
     // Mở modal để chỉnh sửa lịch hẹn hiện có
@@ -94,18 +80,18 @@ export default function AppointmentPage() {
     const handleSubmit = async () => {
         try {
             const payload = { patientId: Number(form.patientId), doctorId: Number(form.doctorId), serviceId: form.serviceId ? Number(form.serviceId) : undefined, scheduleId: form.scheduleId ? Number(form.scheduleId) : undefined, appointmentDate: form.appointmentDate, appointmentTime: form.appointmentTime, status: form.status, note: form.note };
-            if (editingId) { 
-                await api.put(`/appointments/${editingId}`, payload); 
-                toast.success('Cập nhật thành công'); 
+            if (editingId) {
+                await api.put(`/appointments/${editingId}`, payload);
+                toast.success('Cập nhật thành công');
             }
-            else { 
-                await api.post('/appointments', payload); 
-                toast.success('Tạo lịch hẹn thành công'); 
+            else {
+                await api.post('/appointments', payload);
+                toast.success('Tạo lịch hẹn thành công');
             }
-            setShowModal(false); 
+            setShowModal(false);
             fetchData(); // Tải lại danh sách sau khi thao tác
-        } catch (err: any) { 
-            toast.error(err.response?.data?.message || 'Có lỗi xảy ra'); 
+        } catch (err: any) {
+            toast.error(err.response?.data?.message || 'Có lỗi xảy ra');
         }
     };
 
@@ -115,14 +101,14 @@ export default function AppointmentPage() {
      */
     const handleDelete = async () => {
         if (!deleteId) return;
-        try { 
-            await api.delete(`/appointments/${deleteId}`); 
-            toast.success('Đã xóa lịch hẹn'); 
-            setDeleteId(null); 
-            fetchData(); 
+        try {
+            await api.delete(`/appointments/${deleteId}`);
+            toast.success('Đã xóa lịch hẹn');
+            setDeleteId(null);
+            fetchData();
         }
-        catch { 
-            toast.error('Xóa thất bại'); 
+        catch {
+            toast.error('Xóa thất bại');
         }
     };
 

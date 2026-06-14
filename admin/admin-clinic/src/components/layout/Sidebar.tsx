@@ -18,14 +18,6 @@ import {
 import { t } from '../../utils/i18n';
 import './Sidebar.css';
 
-/**
- * Interface cho một phần tử Menu điều hướng (Navigation Item).
- * @property path Đường dẫn liên kết của Router.
- * @property label Khóa đa ngôn ngữ dùng để hiển thị nhãn của menu.
- * @property icon Biểu tượng hiển thị bên cạnh nhãn.
- * @property alwaysVisible Thiết lập luôn hiển thị (true) không phụ thuộc vào phân quyền.
- * @property adminOnly Chỉ hiển thị đối với tài khoản ADMIN.
- */
 interface NavItem {
     path: string;
     label: string;
@@ -66,7 +58,7 @@ export const navItems: NavItem[] = [
 export default function Sidebar() {
     // Trích xuất các thuộc tính phân quyền và thông tin user hiện tại
     const { user, allowedPaths, isPathAllowed, isPermissionsLoaded, logout } = useAuth();
-    
+
     // Đang trong trạng thái tải dữ liệu phân quyền
     const loading = !!user?.role && !isPermissionsLoaded;
 
@@ -84,16 +76,16 @@ export default function Sidebar() {
                     <div className="nav-section" style={{ padding: '1rem', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
                         <p>⚠️ Tài khoản của bạn chưa được cấp quyền truy cập hoặc vai trò của bạn đã bị khóa.</p>
                         <p style={{ marginTop: '0.5rem' }}>Vui lòng liên hệ Admin để biết thêm chi tiết.</p>
-                        <button 
-                            onClick={logout} 
-                            style={{ 
-                                marginTop: '1.5rem', 
-                                width: '100%', 
-                                padding: '0.6rem 1rem', 
-                                borderRadius: '6px', 
-                                backgroundColor: '#dc2626', 
-                                color: 'white', 
-                                border: 'none', 
+                        <button
+                            onClick={logout}
+                            style={{
+                                marginTop: '1.5rem',
+                                width: '100%',
+                                padding: '0.6rem 1rem',
+                                borderRadius: '6px',
+                                backgroundColor: '#dc2626',
+                                color: 'white',
+                                border: 'none',
                                 fontWeight: '600',
                                 cursor: 'pointer',
                                 transition: 'background-color 0.2s'
@@ -125,9 +117,9 @@ export default function Sidebar() {
 
     // Phân nhóm các phần tử menu để render theo từng cụm chức năng riêng biệt
     const dashboardItems = visibleItems.filter(i => i.path === '/');
-    const mainItems = visibleItems.filter(i => 
-        i.path !== '/' && 
-        i.path !== '/profile' && 
+    const mainItems = visibleItems.filter(i =>
+        i.path !== '/' &&
+        i.path !== '/profile' &&
         !i.adminOnly
     );
     const adminItems = visibleItems.filter(i => i.adminOnly && i.path !== '/');

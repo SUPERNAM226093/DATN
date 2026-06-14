@@ -2,12 +2,6 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../store/AuthContext';
 import api from '../../services/api';
 import './ProfileModal.css';
-
-/**
- * Interface cho Props của component ProfileModal.
- * @property isOpen Trạng thái hiển thị modal (true là mở, false là ẩn).
- * @property onClose Hàm callback dùng để đóng modal.
- */
 interface ProfileModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -24,12 +18,12 @@ interface ProfileModalProps {
 export default function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
     // Lấy thông tin người dùng hiện tại và hàm cập nhật thông tin người dùng từ AuthContext
     const { user, updateUser } = useAuth();
-    
+
     // Các state quản lý trạng thái tải (loading), thông báo lỗi (error), và thông báo thành công (success)
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
-    
+
     // State lưu dữ liệu form chỉnh sửa thông tin cá nhân
     const [form, setForm] = useState({
         fullName: '',
@@ -47,11 +41,6 @@ export default function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
         "ERR_UNAUTHORIZED": "Phiên đăng nhập hết hạn, vui lòng đăng nhập lại."
     };
 
-    /**
-     * HÀM: getErrorMessage
-     * MÔ TẢ: Phân tích thông báo lỗi trả về từ Backend và trả về chuỗi thông báo Tiếng Việt thân thiện.
-     * @param rawError Thông báo lỗi thô nhận được từ API hoặc hệ thống.
-     */
     const getErrorMessage = (rawError: string) => {
         for (const key in ERROR_MAP) {
             if (rawError.includes(key)) return ERROR_MAP[key];
@@ -89,13 +78,13 @@ export default function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
      */
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         // Kiểm tra độ dài mật khẩu mới (nếu người dùng có ý định thay đổi mật khẩu)
         if (form.password && form.password.length < 6) {
             setError("Mật khẩu mới phải có ít nhất 6 ký tự.");
             return;
         }
-        
+
         // Đảm bảo mật khẩu xác nhận khớp hoàn toàn với mật khẩu mới đã nhập
         if (form.password !== form.confirmPassword) {
             setError("Mật khẩu xác nhận không khớp.");
@@ -120,13 +109,13 @@ export default function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
             // Gọi API cập nhật thông tin cá nhân của người dùng hiện tại
             await api.put(`/users/profile`, dataToUpdate);
             setSuccess('Cập nhật thông tin thành công!');
-            
+
             // Cập nhật lại thông tin tài khoản lưu trữ cục bộ để Header/Sidebar cập nhật ngay lập tức
             updateUser({ fullName: form.fullName });
-            
+
             // Reset lại ô mật khẩu
             setForm(prev => ({ ...prev, password: '', confirmPassword: '' }));
-            
+
             // Đóng modal sau 1 giây hiển thị thông báo thành công
             setTimeout(() => {
                 onClose();
@@ -167,37 +156,37 @@ export default function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
                     <form onSubmit={handleSubmit} className="profile-form">
                         <div className="form-group">
                             <label>Họ và tên mới</label>
-                            <input 
-                                type="text" 
+                            <input
+                                type="text"
                                 required
                                 value={form.fullName}
-                                onChange={e => setForm({...form, fullName: e.target.value})}
+                                onChange={e => setForm({ ...form, fullName: e.target.value })}
                             />
                         </div>
                         <div className="form-group">
                             <label>Số điện thoại mới</label>
-                            <input 
-                                type="tel" 
+                            <input
+                                type="tel"
                                 inputMode="tel"
                                 maxLength={15}
                                 required
                                 value={form.phone}
-                                onChange={e => setForm({...form, phone: e.target.value})}
+                                onChange={e => setForm({ ...form, phone: e.target.value })}
                             />
                         </div>
                         <div className="form-group">
                             <label>Mật khẩu mới (Để trống nếu không đổi)</label>
                             <div style={{ position: 'relative' }}>
-                                <input 
-                                    type={showPassword ? "text" : "password"} 
+                                <input
+                                    type={showPassword ? "text" : "password"}
                                     value={form.password}
-                                    onChange={e => setForm({...form, password: e.target.value})}
+                                    onChange={e => setForm({ ...form, password: e.target.value })}
                                     placeholder="••••••••"
                                 />
                                 {/* Nút xem/ẩn mật khẩu ẩn hiện linh hoạt */}
                                 {form.password && (
-                                    <button 
-                                        type="button" 
+                                    <button
+                                        type="button"
                                         onClick={() => setShowPassword(!showPassword)}
                                         style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px' }}
                                     >
@@ -210,10 +199,10 @@ export default function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
                         {form.password && (
                             <div className="form-group">
                                 <label>Xác nhận mật khẩu mới</label>
-                                <input 
-                                    type={showPassword ? "text" : "password"} 
+                                <input
+                                    type={showPassword ? "text" : "password"}
                                     value={form.confirmPassword}
-                                    onChange={e => setForm({...form, confirmPassword: e.target.value})}
+                                    onChange={e => setForm({ ...form, confirmPassword: e.target.value })}
                                     placeholder="••••••••"
                                     required={!!form.password}
                                 />
