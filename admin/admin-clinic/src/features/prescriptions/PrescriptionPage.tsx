@@ -19,13 +19,11 @@ interface Prescription { id: number; medicalRecordId: number; doctorId: number; 
 interface MedicalRecordOption { id: number; doctorName: string; diagnosis: string; }
 interface DoctorOption { id: number; userId: number; fullName: string; specializationName: string; }
 
-// Cấu trúc một dòng thuốc trống
 const emptyItem: PrescriptionItem = { medicineName: '', dosage: '', frequency: '', duration: '', note: '' };
-// Cấu trúc form đơn thuốc trống
+
 const emptyForm = { medicalRecordId: '', doctorId: '', items: [{ ...emptyItem }] as PrescriptionItem[] };
 
 export default function PrescriptionPage() {
-    // --- 1. KHỞI TẠO STATE & QUYỀN HẠN ---
     const { user, isDoctor, isAdmin } = useAuth();
     // Phân quyền cứng: DOCTOR chỉ được Xem/Sửa Đơn thuốc, không được Thêm/Xóa
     const canAdd = isAdmin;
@@ -33,7 +31,7 @@ export default function PrescriptionPage() {
     const [items, setItems] = useState<Prescription[]>([]); // Danh sách các đơn thuốc hiện có
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
-    
+
     const [editingId, setEditingId] = useState<number | null>(null);
     const [form, setForm] = useState(emptyForm);
     const [deleteId, setDeleteId] = useState<number | null>(null);
@@ -43,15 +41,15 @@ export default function PrescriptionPage() {
     const [doctors, setDoctors] = useState<DoctorOption[]>([]);
 
     const fetchData = async () => {
-        try { 
-            const res = await api.get('/prescriptions'); 
-            setItems(res.data); 
+        try {
+            const res = await api.get('/prescriptions');
+            setItems(res.data);
         }
-        catch { 
-            toast.error('Không thể tải danh sách đơn thuốc'); 
+        catch {
+            toast.error('Không thể tải danh sách đơn thuốc');
         }
-        finally { 
-            setLoading(false); 
+        finally {
+            setLoading(false);
         }
     };
 
@@ -66,9 +64,9 @@ export default function PrescriptionPage() {
         } catch { /* Bỏ qua lỗi nếu danh sách tạm thời trống */ }
     };
 
-    useEffect(() => { 
-        fetchData(); 
-        fetchOptions(); 
+    useEffect(() => {
+        fetchData();
+        fetchOptions();
     }, []);
 
     const openCreate = () => {
@@ -84,37 +82,37 @@ export default function PrescriptionPage() {
 
     const handleSubmit = async () => {
         try {
-            const payload = { 
-                medicalRecordId: Number(form.medicalRecordId), 
-                doctorId: Number(form.doctorId), 
-                items: form.items.filter(i => i.medicineName.trim() !== '') 
+            const payload = {
+                medicalRecordId: Number(form.medicalRecordId),
+                doctorId: Number(form.doctorId),
+                items: form.items.filter(i => i.medicineName.trim() !== '')
             };
-            
-            if (editingId) { 
-                await api.put(`/prescriptions/${editingId}`, payload); 
-                toast.success('Cập nhật đơn thuốc thành công'); 
+
+            if (editingId) {
+                await api.put(`/prescriptions/${editingId}`, payload);
+                toast.success('Cập nhật đơn thuốc thành công');
             }
-            else { 
-                await api.post('/prescriptions', payload); 
-                toast.success('Đã tạo đơn thuốc mới'); 
+            else {
+                await api.post('/prescriptions', payload);
+                toast.success('Đã tạo đơn thuốc mới');
             }
-            setShowModal(false); 
+            setShowModal(false);
             fetchData();
-        } catch (err: any) { 
-            toast.error(err.response?.data?.message || 'Có lỗi khi lưu đơn thuốc'); 
+        } catch (err: any) {
+            toast.error(err.response?.data?.message || 'Có lỗi khi lưu đơn thuốc');
         }
     };
 
     const handleDelete = async () => {
         if (!deleteId) return;
-        try { 
-            await api.delete(`/prescriptions/${deleteId}`); 
-            toast.success('Đã xóa đơn thuốc'); 
-            setDeleteId(null); 
-            fetchData(); 
+        try {
+            await api.delete(`/prescriptions/${deleteId}`);
+            toast.success('Đã xóa đơn thuốc');
+            setDeleteId(null);
+            fetchData();
         }
-        catch { 
-            toast.error('Xóa đơn thuốc thất bại'); 
+        catch {
+            toast.error('Xóa đơn thuốc thất bại');
         }
     };
 

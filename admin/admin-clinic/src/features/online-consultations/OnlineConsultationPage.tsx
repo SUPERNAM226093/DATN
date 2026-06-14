@@ -7,16 +7,6 @@ import Modal from "../../components/ui/Modal";
 import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import { useAuth } from "../../store/AuthContext";
 
-/**
- * FILE: OnlineConsultationPage.tsx
- * MÔ TẢ: Trang quản lý dịch vụ Tư vấn trực tuyến (Telemedicine).
- * Chức năng chính:
- * 1. Hiển thị danh sách đăng ký tư vấn qua Video.
- * 2. Xác nhận thanh toán từ bệnh nhân (Duyệt PENDING sang PAID).
- * 3. Cung cấp đường dẫn phòng họp (Meeting Link - Zoom/Google Meet/Zalo) cho bệnh nhân.
- * 4. Quản lý trạng thái hết hạn (Expired) nếu bệnh nhân không thanh toán đúng hạn.
- */
-
 interface OnlineConsultation {
     id: number;
     patientId: number;
@@ -49,17 +39,17 @@ const lockedFieldStyle: CSSProperties = {
 };
 
 export default function OnlineConsultationPage() {
-    
+
     const [items, setItems] = useState<OnlineConsultation[]>([]); // Danh sách đơn tư vấn
     const [loading, setLoading] = useState(true);
     const [filterStatus] = useState("ALL"); // Bộ lọc trạng thái
-    
+
     const [editModal, setEditModal] = useState<OnlineConsultation | null>(null); // Đơn đang được chỉnh sửa
     const [approving, setApproving] = useState(false); // Trạng thái lưu dữ liệu
-    
+
     const [doctors, setDoctors] = useState<any[]>([]); // Danh sách bác sĩ để gán lại (nếu cần)
     const [specializations, setSpecializations] = useState<any[]>([]);
-    
+
     // Dữ liệu form chỉnh sửa
     const [editForm, setEditForm] = useState({
         doctorId: "",
@@ -77,12 +67,6 @@ export default function OnlineConsultationPage() {
     // Phân quyền: DOCTOR và STAFF chỉ được Xem và Sửa, không được Thêm/Xóa
     const { isAdmin } = useAuth();
     const canDelete = isAdmin;
-    // canAdd cũng chỉ Admin (tư vấn online tạo từ phia patient, không tạo từ admin)
-
-    /**
-     * HÀM: fetchData
-     * MÔ TẢ: Lấy danh sách đăng ký tư vấn trực tuyến từ Server, có hỗ trợ lọc theo trạng thái.
-     */
     const fetchData = async () => {
         setLoading(true);
         try {
@@ -96,10 +80,6 @@ export default function OnlineConsultationPage() {
         }
     };
 
-    /**
-     * HÀM: fetchOptions
-     * MÔ TẢ: Tải dữ liệu bổ trợ cho việc chỉnh sửa đơn.
-     */
     const fetchOptions = async () => {
         try {
             const [docsRes, specsRes] = await Promise.all([
@@ -114,15 +94,12 @@ export default function OnlineConsultationPage() {
     };
 
     // Load lại dữ liệu mỗi khi bộ lọc trạng thái thay đổi
-    useEffect(() => { 
-        fetchData(); 
+    useEffect(() => {
+        fetchData();
         fetchOptions();
     }, [filterStatus]);
 
-    /**
-     * HÀM: handleUpdate
-     * MÔ TẢ: Cập nhật thông tin đơn tư vấn (Đặc biệt là cập nhật Trạng thái và Meeting Link).
-     */
+
     const handleUpdate = async () => {
         if (!editModal) return;
         setApproving(true);
@@ -232,15 +209,15 @@ export default function OnlineConsultationPage() {
                                         <td>
                                             <div className="table-actions">
                                                 {/* Nút Sửa: Dùng để xác nhận thanh toán thủ công hoặc dán link phòng họp */}
-                                                <button 
-                                                    className="btn-icon text-orange-500" 
+                                                <button
+                                                    className="btn-icon text-orange-500"
                                                     title="Chỉnh sửa / Duyệt đơn"
                                                     onClick={() => {
                                                         setEditModal(c);
                                                         setEditForm({
                                                             doctorId: String(c.doctorId),
-                                                            specializationId: c.specializationName && specializations.length > 0 
-                                                                ? String(specializations.find(s => s.name === c.specializationName)?.id || "") 
+                                                            specializationId: c.specializationName && specializations.length > 0
+                                                                ? String(specializations.find(s => s.name === c.specializationName)?.id || "")
                                                                 : "",
                                                             phoneNumber: c.phoneNumber,
                                                             amount: c.amount,
@@ -255,9 +232,9 @@ export default function OnlineConsultationPage() {
                                                 </button>
                                                 {/* Nếu đã thanh toán và có link, hiện nút vào phòng họp nhanh */}
                                                 {c.paymentStatus === "PAID" && c.meetingLink && (
-                                                    <a 
-                                                        href={c.meetingLink} 
-                                                        target="_blank" 
+                                                    <a
+                                                        href={c.meetingLink}
+                                                        target="_blank"
                                                         rel="noopener noreferrer"
                                                         className="btn-icon text-green-600"
                                                         title="Truy cập phòng tư vấn"
@@ -265,7 +242,7 @@ export default function OnlineConsultationPage() {
                                                         <HiOutlineVideoCamera />
                                                     </a>
                                                 )}
-                                                                {canDelete && <button className="btn-icon text-red-500" title="Xóa" onClick={() => setDeleteId(c.id)}><HiOutlineTrash /></button>}
+                                                {canDelete && <button className="btn-icon text-red-500" title="Xóa" onClick={() => setDeleteId(c.id)}><HiOutlineTrash /></button>}
                                             </div>
                                         </td>
                                     </tr>
@@ -283,10 +260,10 @@ export default function OnlineConsultationPage() {
                     <div className="space-y-4">
                         <div className="form-group">
                             <label className="block text-sm font-semibold mb-1">Bác sĩ phụ trách tư vấn</label>
-                            <select 
+                            <select
                                 className="form-control"
                                 value={editForm.doctorId}
-                                onChange={(e) => setEditForm({...editForm, doctorId: e.target.value})}
+                                onChange={(e) => setEditForm({ ...editForm, doctorId: e.target.value })}
                                 disabled
                                 style={lockedFieldStyle}
                             >
@@ -295,14 +272,14 @@ export default function OnlineConsultationPage() {
                                 ))}
                             </select>
                         </div>
-                        
+
                         <div className="form-group">
                             <label className="block text-sm font-semibold mb-1">Số điện thoại liên hệ</label>
-                            <input 
+                            <input
                                 type="text"
                                 className="form-control"
                                 value={editForm.phoneNumber}
-                                onChange={(e) => setEditForm({...editForm, phoneNumber: e.target.value})}
+                                onChange={(e) => setEditForm({ ...editForm, phoneNumber: e.target.value })}
                                 disabled
                                 style={lockedFieldStyle}
                             />
@@ -312,21 +289,21 @@ export default function OnlineConsultationPage() {
                         <div className="grid grid-cols-2 gap-4">
                             <div className="form-group">
                                 <label className="block text-sm font-semibold mb-1">Ngày tư vấn</label>
-                                <input 
+                                <input
                                     type="date"
                                     className="form-control"
                                     value={editForm.consultationDate}
-                                    onChange={(e) => setEditForm({...editForm, consultationDate: e.target.value})}
+                                    onChange={(e) => setEditForm({ ...editForm, consultationDate: e.target.value })}
                                     disabled
                                     style={lockedFieldStyle}
                                 />
                             </div>
                             <div className="form-group">
                                 <label className="block text-sm font-semibold mb-1">Khung giờ</label>
-                                <select 
+                                <select
                                     className="form-control"
                                     value={editForm.consultationTime}
-                                    onChange={(e) => setEditForm({...editForm, consultationTime: e.target.value})}
+                                    onChange={(e) => setEditForm({ ...editForm, consultationTime: e.target.value })}
                                     disabled
                                     style={lockedFieldStyle}
                                 >
@@ -343,10 +320,10 @@ export default function OnlineConsultationPage() {
                         {/* QUAN TRỌNG: Duyệt trạng thái thanh toán */}
                         <div className="form-group">
                             <label className="block text-sm font-semibold mb-1">Trạng thái (Duyệt PAID sau khi kiểm tra tài khoản)</label>
-                            <select 
+                            <select
                                 className="form-control"
                                 value={editForm.paymentStatus}
-                                onChange={(e) => setEditForm({...editForm, paymentStatus: e.target.value})}
+                                onChange={(e) => setEditForm({ ...editForm, paymentStatus: e.target.value })}
                             >
                                 <option value="PENDING">Chờ quét mã (PENDING)</option>
                                 <option value="PAID">Đã nhận thanh toán (PAID)</option>
@@ -358,12 +335,12 @@ export default function OnlineConsultationPage() {
                         {/* Gửi Meeting Link cho bệnh nhân */}
                         <div className="form-group">
                             <label className="block text-sm font-semibold mb-1">Link phòng họp Video (Meet/Zoom/Zalo)</label>
-                            <input 
+                            <input
                                 type="text"
                                 className="form-control"
                                 placeholder="Dán đường dẫn truy cập phòng họp tại đây..."
                                 value={editForm.meetingLink}
-                                onChange={(e) => setEditForm({...editForm, meetingLink: e.target.value})}
+                                onChange={(e) => setEditForm({ ...editForm, meetingLink: e.target.value })}
                             />
                             <p className="text-xs text-gray-500 mt-1">Lưu ý: Bệnh nhân chỉ thấy nút "Vào phòng họp" khi trạng thái là PAID.</p>
                         </div>
@@ -380,11 +357,11 @@ export default function OnlineConsultationPage() {
 
             {/* DIALOG XÁC NHẬN XÓA */}
             {deleteId && (
-                <ConfirmDialog 
-                    title="Xóa đơn tư vấn" 
+                <ConfirmDialog
+                    title="Xóa đơn tư vấn"
                     message="Bạn có chắc chắn muốn xóa hồ sơ đăng ký này không? Mọi dữ liệu liên quan sẽ bị mất."
-                    onConfirm={handleDelete} 
-                    onCancel={() => setDeleteId(null)} 
+                    onConfirm={handleDelete}
+                    onCancel={() => setDeleteId(null)}
                 />
             )}
         </div>

@@ -7,21 +7,13 @@ import { toast } from 'react-toastify';
 import { HiOutlinePlus, HiOutlineTrash } from 'react-icons/hi2';
 import { useAuth } from '../../store/AuthContext';
 
-/**
- * FILE: MedicalRecordPage.tsx
- * MÔ TẢ: Trang quản lý Hồ sơ bệnh án (Medical Records).
- * Dành cho Bác sĩ để ghi nhận kết quả chẩn đoán sau khi thăm khám, hoặc Admin để quản lý danh sách bệnh án.
- */
-
 interface MedicalRecord { id: number; appointmentId: number; doctorId: number; doctorName: string; diagnosis: string; conclusion: string; createdAt: string; }
 interface AppointmentOption { id: number; patientName: string; doctorName: string; appointmentDate: string; }
 interface DoctorOption { id: number; userId: number; fullName: string; specializationName: string; }
 
-// Khởi tạo form trống
 const emptyForm = { appointmentId: '', doctorId: '', diagnosis: '', conclusion: '' };
 
 export default function MedicalRecordPage() {
-    // --- 1. KHỞI TẠO STATE & QUYỀN HẠN ---
     const { user, isDoctor, isAdmin } = useAuth();
     // Phân quyền cứng: DOCTOR chỉ được Xem/Sửa Hồ sơ bệnh án, không được Thêm/Xóa
     const canAdd = isAdmin;
@@ -29,7 +21,7 @@ export default function MedicalRecordPage() {
     const [items, setItems] = useState<MedicalRecord[]>([]); // Danh sách bệnh án
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
-    
+
     const [editingId, setEditingId] = useState<number | null>(null);
     const [form, setForm] = useState(emptyForm);
     const [deleteId, setDeleteId] = useState<number | null>(null);
@@ -38,27 +30,19 @@ export default function MedicalRecordPage() {
     const [appointments, setAppointments] = useState<AppointmentOption[]>([]);
     const [doctors, setDoctors] = useState<DoctorOption[]>([]);
 
-    /**
-     * HÀM: fetchData
-     * MÔ TẢ: Lấy danh sách hồ sơ bệnh án hiện có.
-     */
     const fetchData = async () => {
-        try { 
-            const res = await api.get('/medical-records'); 
-            setItems(res.data); 
+        try {
+            const res = await api.get('/medical-records');
+            setItems(res.data);
         }
-        catch { 
-            toast.error('Không thể tải danh sách hồ sơ bệnh án'); 
+        catch {
+            toast.error('Không thể tải danh sách hồ sơ bệnh án');
         }
-        finally { 
-            setLoading(false); 
+        finally {
+            setLoading(false);
         }
     };
 
-    /**
-     * HÀM: fetchOptions
-     * MÔ TẢ: Tải danh sách lịch hẹn và bác sĩ để phục vụ việc chọn dữ liệu khi tạo bệnh án.
-     */
     const fetchOptions = async () => {
         try {
             const [apptRes, docRes] = await Promise.all([
@@ -70,9 +54,9 @@ export default function MedicalRecordPage() {
         } catch { /* Không hiện lỗi vì danh sách có thể tạm thời trống */ }
     };
 
-    useEffect(() => { 
-        fetchData(); 
-        fetchOptions(); 
+    useEffect(() => {
+        fetchData();
+        fetchOptions();
     }, []);
 
     /**
@@ -98,18 +82,18 @@ export default function MedicalRecordPage() {
     const handleSubmit = async () => {
         try {
             const payload = { appointmentId: Number(form.appointmentId), doctorId: Number(form.doctorId), diagnosis: form.diagnosis, conclusion: form.conclusion };
-            if (editingId) { 
-                await api.put(`/medical-records/${editingId}`, payload); 
-                toast.success('Cập nhật thành công'); 
+            if (editingId) {
+                await api.put(`/medical-records/${editingId}`, payload);
+                toast.success('Cập nhật thành công');
             }
-            else { 
-                await api.post('/medical-records', payload); 
-                toast.success('Đã ghi nhận hồ sơ bệnh án mới'); 
+            else {
+                await api.post('/medical-records', payload);
+                toast.success('Đã ghi nhận hồ sơ bệnh án mới');
             }
-            setShowModal(false); 
+            setShowModal(false);
             fetchData();
-        } catch (err: any) { 
-            toast.error(err.response?.data?.message || 'Có lỗi xảy ra'); 
+        } catch (err: any) {
+            toast.error(err.response?.data?.message || 'Có lỗi xảy ra');
         }
     };
 
@@ -119,14 +103,14 @@ export default function MedicalRecordPage() {
      */
     const handleDelete = async () => {
         if (!deleteId) return;
-        try { 
-            await api.delete(`/medical-records/${deleteId}`); 
-            toast.success('Đã xóa hồ sơ'); 
-            setDeleteId(null); 
-            fetchData(); 
+        try {
+            await api.delete(`/medical-records/${deleteId}`);
+            toast.success('Đã xóa hồ sơ');
+            setDeleteId(null);
+            fetchData();
         }
-        catch { 
-            toast.error('Xóa hồ sơ thất bại'); 
+        catch {
+            toast.error('Xóa hồ sơ thất bại');
         }
     };
 
@@ -220,7 +204,7 @@ export default function MedicalRecordPage() {
                     {/* Chi tiết Chẩn đoán và Kết luận y khoa */}
                     <div className="form-group"><label>{"Chẩn đoán"}</label><textarea name="diagnosis" className="form-control" value={form.diagnosis} onChange={handleChange} rows={3} placeholder="Nhập tình trạng bệnh lý, triệu chứng ghi nhận được..." /></div>
                     <div className="form-group"><label>{"Kết luận"}</label><textarea name="conclusion" className="form-control" value={form.conclusion} onChange={handleChange} rows={3} placeholder="Hướng giải quyết, thuốc chỉ định hoặc lời dặn bác sĩ..." /></div>
-                    
+
                     <div className="form-actions">
                         <button className="btn btn-ghost" onClick={() => setShowModal(false)}>{"Hủy"}</button>
                         <button className="btn btn-primary" onClick={handleSubmit}>{editingId ? "Cập nhật" : "Tạo mới"}</button>

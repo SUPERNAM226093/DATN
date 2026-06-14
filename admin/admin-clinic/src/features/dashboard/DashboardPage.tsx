@@ -14,12 +14,6 @@ import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
 
-/**
- * FILE: DashboardPage.tsx
- * MÔ TẢ: Trang Dashboard chính của hệ thống quản trị.
- * Hiển thị các thống kê tổng quan về lịch hẹn, bệnh nhân mới và hiệu suất làm việc dưới dạng biểu đồ (Recharts).
- * Hệ thống có cơ chế tự động làm mới dữ liệu sau mỗi 30 giây để đảm bảo tính thời gian thực.
- */
 
 interface DirectAppointmentChartPoint {
     date: string;
@@ -142,12 +136,6 @@ export default function DashboardPage() {
 
         return days;
     };
-
-    /**
-     * HÀM: fetchChartData
-     * MÔ TẢ: Lấy dữ liệu thống kê từ API Backend.
-     * @param isBackground Nếu là true, sẽ tải dữ liệu ngầm mà không hiện loading spinner.
-     */
     const fetchChartData = useCallback(async (isBackground = false) => {
         if (!isBackground) setLoading(true);
         try {

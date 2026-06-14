@@ -13,21 +13,14 @@ export default function LoginPage() {
 
     const [isForgotOpen, setIsForgotOpen] = useState(false); // Trạng thái đóng/mở Modal quên mật khẩu
 
-    /**
-     * HÀM: handleSubmit
-     * MÔ TẢ: Xử lý sự kiện khi nhấn nút "Đăng nhập".
-     */
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         setLoading(true);
         try {
-            // Gọi hàm login đã được định nghĩa trong AuthContext để xác thực với Backend
             await login(email, password);
             toast.success("Đăng nhập thành công!");
-            // Chuyển hướng về trang chủ Admin và tải lại trang để làm mới toàn bộ state của ứng dụng
             window.location.href = '/';
         } catch (err: any) {
-            // Hiển thị thông báo lỗi từ Server (ví dụ: Sai mật khẩu, Tài khoản không tồn tại)
             toast.error(err.response?.data?.message || "Thông tin đăng nhập không hợp lệ");
         } finally {
             setLoading(false);

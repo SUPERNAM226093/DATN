@@ -5,13 +5,6 @@ import { useAuth } from '../../store/AuthContext';
 import { HiOutlinePlus, HiOutlinePencil, HiOutlineTrash } from 'react-icons/hi2';
 import Modal from '../../components/ui/Modal';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
-
-/**
- * FILE: RoomBookingPage.tsx
- * MÔ TẢ: Trang quản lý Đơn đặt phòng nội trú / phòng khám.
- * Cho phép Admin điều phối việc nhận phòng, trả phòng của bệnh nhân, tính phí dự kiến và quản lý trạng thái phòng.
- */
-
 interface RoomBooking {
     id: number;
     patientName: string;
@@ -67,7 +60,7 @@ export default function RoomBookingPage() {
     const [patients, setPatients] = useState<UserOpt[]>([]); // Danh sách người dùng để gán làm người đặt
     const [rooms, setRooms] = useState<RoomOpt[]>([]); // Danh sách phòng hiện có
     const [loading, setLoading] = useState(true);
-    
+
 
     const [showModal, setShowModal] = useState(false);
     const [editingId, setEditingId] = useState<number | null>(null);
@@ -342,11 +335,11 @@ export default function RoomBookingPage() {
 
             {/* DIALOG XÁC NHẬN XÓA */}
             {deleteId && (
-                <ConfirmDialog 
-                    title="Xóa hồ sơ đặt phòng" 
-                    message="Bạn có chắc chắn muốn xóa đơn đặt phòng này không? Thao tác này sẽ gỡ bỏ dữ liệu vĩnh viễn." 
-                    onConfirm={handleDelete} 
-                    onCancel={() => setDeleteId(null)} 
+                <ConfirmDialog
+                    title="Xóa hồ sơ đặt phòng"
+                    message="Bạn có chắc chắn muốn xóa đơn đặt phòng này không? Thao tác này sẽ gỡ bỏ dữ liệu vĩnh viễn."
+                    onConfirm={handleDelete}
+                    onCancel={() => setDeleteId(null)}
                 />
             )}
         </div>

@@ -7,39 +7,30 @@ import { toast } from 'react-toastify';
 import { HiOutlinePlus, HiOutlinePencil, HiOutlineTrash, HiOutlinePhoto } from 'react-icons/hi2';
 import { useAuth } from '../../store/AuthContext';
 
-/**
- * FILE: DoctorPage.tsx
- * MÔ TẢ: Trang quản lý danh sách Bác sĩ.
- * Cho phép Admin thêm mới bác sĩ từ danh sách người dùng, cập nhật chuyên khoa, bằng cấp, kinh nghiệm và ảnh đại diện.
- */
-
-interface Doctor { 
-    id: number; 
-    userId: number; 
-    fullName: string; 
-    email: string; 
-    specializationName: string; 
-    clinicId: number; 
-    experienceYears: number; 
-    bio: string; 
+interface Doctor {
+    id: number;
+    userId: number;
+    fullName: string;
+    email: string;
+    specializationName: string;
+    clinicId: number;
+    experienceYears: number;
+    bio: string;
     status: string;
-    featureImageUrl: string; 
+    featureImageUrl: string;
 }
 interface UserOption { id: number; fullName: string; email: string; roleName: string; }
 interface SpecOption { id: number; name: string; }
-
-// Khởi tạo form trống
 const emptyForm = { userId: '', specializationId: '', clinicId: '', experienceYears: '', bio: '' };
 
 export default function DoctorPage() {
-    // --- 1. KHỞI TẠO STATE ---
     useAuth(); // keep hook if it performs initialization, though it's unused now. Wait, just removing `const { isAdmin } =`
     const [doctors, setDoctors] = useState<Doctor[]>([]); // Danh sách bác sĩ hiện tại
     const [users, setUsers] = useState<UserOption[]>([]); // Danh sách người dùng (để gán quyền bác sĩ)
     const [specs, setSpecs] = useState<SpecOption[]>([]); // Danh sách các chuyên khoa
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
-    
+
     const [editingId, setEditingId] = useState<number | null>(null);
     const [form, setForm] = useState(emptyForm);
     const [deleteId, setDeleteId] = useState<number | null>(null);

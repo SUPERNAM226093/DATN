@@ -1,23 +1,13 @@
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import api from '../../services/api';
-
-
-/**
- * FILE: ForgotPasswordModal.tsx
- * MÔ TẢ: Cửa sổ Modal xử lý quy trình lấy lại mật khẩu.
- * Bao gồm 2 bước:
- * Bước 1: Người dùng nhập Email để nhận mã xác thực (OTP).
- * Bước 2: Nhập mã xác thực và mật khẩu mới để cập nhật tài khoản.
- */
-
 interface ForgotPasswordModalProps {
-    isOpen: boolean; // Trạng thái mở của Modal
-    onClose: () => void; // Hàm đóng Modal
+    isOpen: boolean;
+    onClose: () => void; // 
 }
 
 export default function ForgotPasswordModal({ isOpen, onClose }: ForgotPasswordModalProps) {
-    
+
     const [step, setStep] = useState(1); // Điều hướng các bước (1: Nhập Email, 2: Nhập mã & Mật khẩu mới)
     const [email, setEmail] = useState(''); // Email người dùng
     const [token, setToken] = useState(''); // Mã xác thực OTP nhận qua mail
@@ -115,7 +105,7 @@ export default function ForgotPasswordModal({ isOpen, onClose }: ForgotPasswordM
                     <h2>{step === 1 ? "Quên mật khẩu" : "Đặt lại mật khẩu"}</h2>
                     <button onClick={onClose} className="close-btn">&times;</button>
                 </div>
-                
+
                 {/* BƯỚC 1: NHẬP EMAIL */}
                 {step === 1 ? (
                     <form onSubmit={handleSendCode} className="p-4">
@@ -180,20 +170,20 @@ export default function ForgotPasswordModal({ isOpen, onClose }: ForgotPasswordM
                             <button type="submit" className="btn btn-primary w-full" disabled={loading}>
                                 {loading ? "Đang tải..." : "Cập nhật"}
                             </button>
-                            
+
                             {/* Nút gửi lại mã nếu chưa nhận được mail */}
-                            <button 
-                                type="button" 
+                            <button
+                                type="button"
                                 className="text-sm text-blue-600 hover:underline disabled:text-gray-400"
                                 onClick={handleSendCode}
                                 disabled={loading || resendCountdown > 0}
                             >
-                                {resendCountdown > 0 
-                                    ? `Gửi lại mã sau (${resendCountdown}s)` 
+                                {resendCountdown > 0
+                                    ? `Gửi lại mã sau (${resendCountdown}s)`
                                     : "Gửi lại mã"}
                             </button>
-                            <button 
-                                type="button" 
+                            <button
+                                type="button"
                                 className="text-xs text-gray-500 hover:underline text-center"
                                 onClick={() => setStep(1)}
                             >
