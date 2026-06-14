@@ -21,9 +21,6 @@ public class AppointmentController {
         return ResponseEntity.ok(appointmentService.findAll());
     }
 
-    /**
-     * Tìm kiếm và lấy thông tin chi tiết của bản ghi theo mã định danh ID.
-     */
     @GetMapping("/{id}")
     public ResponseEntity<AppointmentResponse> getById(@PathVariable Long id) {
         return ResponseEntity.ok(appointmentService.findById(id));
@@ -54,9 +51,6 @@ public class AppointmentController {
         return ResponseEntity.noContent().build();
     }
 
-    /**
-     * Phương thức: Lấy theo lịch trình.
-     */
     @GetMapping("/by-schedule/{scheduleId}")
     public ResponseEntity<List<AppointmentResponse>> getBySchedule(@PathVariable Long scheduleId) {
         return ResponseEntity.ok(appointmentService.findByScheduleId(scheduleId));

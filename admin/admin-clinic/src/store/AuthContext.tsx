@@ -37,10 +37,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     const [token, setToken] = useState<string | null>(() => {
+        // Khôi phục phiên đăng nhập sau khi reload trang.
         return localStorage.getItem('token');
     });
 
+    // Danh sách route được phép truy cập cho role hiện tại.
     const [allowedPaths, setAllowedPaths] = useState<Set<string>>(new Set());
+    // Dùng để tránh quyết định điều hướng trước khi quyền được tính xong.
     const [isPermissionsLoaded, setIsPermissionsLoaded] = useState<boolean>(false);
 
     // ── Quyền cố định (hardcode) cho từng vai trò ──────────────────────────
@@ -50,10 +53,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     //         Dịch vụ & Phòng (rooms) → Xem/Thêm/Sửa (không Xóa)
 
     const fetchAllowedPaths = useCallback((rawRoleName: string) => {
-        // Chuẩn hóa role, loại bỏ tiền tố ROLE_ nếu có (ví dụ: ROLE_STAFF -> STAFF)
+        // Backend có thể trả về STAFF hoặc ROLE_STAFF, nên cần chuẩn hóa về cùng một dạng.
         const roleName = rawRoleName.replace(/^ROLE_/, '').toUpperCase();
 
         if (roleName === 'ADMIN') {
+            // * nghĩa là cho phép toàn bộ route nội bộ của admin.
             setAllowedPaths(new Set(['*']));
             setIsPermissionsLoaded(true);
             return;
@@ -84,31 +88,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setIsPermissionsLoaded(true);
             return;
         }
-        // Mọi vai trò không xác định → không cấp quyền
+        // Sentinel này giúp phân biệt rõ trạng thái "đã tính quyền nhưng không được vào đâu".
         setAllowedPaths(new Set(['__no_permission__']));
         setIsPermissionsLoaded(true);
     }, []);
 
     useEffect(() => {
         if (!user?.role) {
+            // Không có user/role thì xóa toàn bộ quyền cũ để tránh dùng nhầm dữ liệu phiên trước.
             setAllowedPaths(new Set());
             setIsPermissionsLoaded(true);
             return;
         }
 
+        // Mỗi lần role đổi, tạm đánh dấu chưa sẵn sàng rồi tính lại quyền theo role mới.
         setIsPermissionsLoaded(false);
         // fetchAllowedPaths đồng bộ (không async) nên gọi trực tiếp
         fetchAllowedPaths(user.role);
     }, [user?.role]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const isPathAllowed = useCallback((path: string) => {
-        // Always allowed paths
+        // Các route nền tảng luôn cho vào để app còn đăng nhập, xem hồ sơ và điều hướng gốc.
         if (path === '/' || path === '/profile' || path === '/login') return true;
-        
+
         if (allowedPaths.has('*')) return true;
         if (allowedPaths.has('__no_permission__')) return false;
-        
-        // Match exact or prefix if allowedPaths has it
+
+        // Cho phép cả route đúng tuyệt đối lẫn route con, ví dụ /appointments/123.
         for (const p of allowedPaths) {
             if (p === path || path.startsWith(p + '/')) {
                 return true;
@@ -121,6 +127,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const res = await api.post('/auth/login', { email, password });
         const data = res.data;
 
+        // Có đăng nhập thành công nhưng nếu là tài khoản phía client thì vẫn chặn khỏi admin portal.
         if (data.role === 'PATIENT' || data.role === 'USER') {
             throw new Error('Access denied. Regular users cannot access the administration portal.');
         }
@@ -143,7 +150,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.removeItem('user');
         setToken(null);
         setUser(null);
-        // Force reload and redirect to login
+        // Reload cứng để xóa sạch state/route đang mở và quay về màn login ngay.
         window.location.href = '/login';
     }, []);
 
@@ -151,6 +158,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(prev => {
             if (!prev) return null;
             const updated = { ...prev, ...updatedFields };
+            // Luôn ghi lại localStorage để lần reload sau vẫn thấy thông tin mới nhất.
             localStorage.setItem('user', JSON.stringify(updated));
             return updated;
         });

@@ -41,7 +41,8 @@ public class OnlineConsultationService {
      * GIẢI THÍCH: Khi bệnh nhân chọn bác sĩ và khung giờ Video Call.
      * XỬ LÝ: Hệ thống tự động đặt trạng thái là PENDING và thiết lập thời gian hết
      * hạn là 30 phút.
-     * CẬP NHẬT: Thêm @Transactional và Pessimistic Lock trên entity Doctor để chống Race Condition (Trùng lịch).
+     * CẬP NHẬT: Thêm @Transactional và Pessimistic Lock trên entity Doctor để chống
+     * Race Condition (Trùng lịch).
      */
     @Transactional
     public OnlineConsultationResponse create(OnlineConsultationRequest req) {
@@ -155,14 +156,15 @@ public class OnlineConsultationService {
     public List<String> getBookedSlots(Long doctorId, LocalDate date) {
         List<String> activeStatuses = List.of("PENDING", "CONFIRMED", "EXAMINING", "COMPLETED");
         List<String> activeOnlineStatuses = List.of("PENDING", "PAID", "CONFIRMED", "COMPLETED");
-        
+
         List<String> bookedOfflineTimes = appointmentRepository.findByDoctorId(doctorId).stream()
                 .filter(a -> a.getAppointmentDate().equals(date) && activeStatuses.contains(a.getStatus()))
                 .map(a -> a.getAppointmentTime().toString().substring(0, 5))
                 .toList();
 
         List<String> bookedOnlineTimes = consultationRepository.findByDoctorId(doctorId).stream()
-                .filter(c -> c.getConsultationDate() != null && c.getConsultationDate().equals(date) && activeOnlineStatuses.contains(c.getPaymentStatus()))
+                .filter(c -> c.getConsultationDate() != null && c.getConsultationDate().equals(date)
+                        && activeOnlineStatuses.contains(c.getPaymentStatus()))
                 .map(OnlineConsultation::getConsultationTime)
                 .toList();
 
@@ -261,8 +263,6 @@ public class OnlineConsultationService {
     @Scheduled(fixedRate = 60_000)
     public void cancelExpiredConsultations() {
         // Gọi xuống Repository để cập nhật trạng thái CANCELLED hàng loạt bằng 1 câu
-        // lệnh
-        // SQL
         int count = consultationRepository.cancelExpiredConsultations(LocalDateTime.now());
         if (count > 0) {
             log.info("[HỆ THỐNG] Đã tự động hủy {} đơn tư vấn hết hạn thanh toán.", count);
@@ -291,7 +291,8 @@ public class OnlineConsultationService {
 
     /**
      * Kiểm tra đơn tư vấn còn PENDING rồi tạo URL thanh toán VNPay.
-     * ID đơn được truyền sang VNPay qua vnp_TxnRef để callback có thể tìm lại đúng bản ghi.
+     * ID đơn được truyền sang VNPay qua vnp_TxnRef để callback có thể tìm lại đúng
+     * bản ghi.
      */
     @Transactional
     public String createVnPayPaymentUrl(Long id, String ipAddr) {
@@ -304,8 +305,10 @@ public class OnlineConsultationService {
     }
 
     /**
-     * Xử lý callback VNPay sau thanh toán: xác thực chữ ký, lấy mã đơn từ vnp_TxnRef,
-     * kiểm tra vnp_ResponseCode và cập nhật trạng thái đơn sang PAID nếu giao dịch thành công.
+     * Xử lý callback VNPay sau thanh toán: xác thực chữ ký, lấy mã đơn từ
+     * vnp_TxnRef,
+     * kiểm tra vnp_ResponseCode và cập nhật trạng thái đơn sang PAID nếu giao dịch
+     * thành công.
      */
     @Transactional
     public boolean processVnPayCallback(Map<String, String> params) {
@@ -338,7 +341,8 @@ public class OnlineConsultationService {
             log.info("[VNPay Callback] Thanh toán thành công cho đơn tư vấn ID: {}", consultationId);
             return true;
         } else {
-            log.warn("[VNPay Callback] Giao dịch thất bại với mã lỗi: {} cho đơn tư vấn ID: {}", responseCode, consultationId);
+            log.warn("[VNPay Callback] Giao dịch thất bại với mã lỗi: {} cho đơn tư vấn ID: {}", responseCode,
+                    consultationId);
             return false;
         }
     }

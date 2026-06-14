@@ -28,6 +28,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+// Xử lý các nghiệp vụ xác thực như đăng ký, đăng nhập và khôi phục mật khẩu.
 public class AuthService {
 
         private final UserRepository userRepository;
@@ -42,6 +43,7 @@ public class AuthService {
         private static final String CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         private static final SecureRandom RANDOM = new SecureRandom();
 
+        // Tạo tài khoản mới cho người dùng và trả về token đăng nhập.
         public AuthResponse register(RegisterRequest request) {
                 if (request.getEmail() == null || !request.getEmail().matches("^[a-zA-Z0-9._%+-]+@gmail\\.com$")) {
                         throw new IllegalArgumentException("Email phải đúng định dạng @gmail.com");
@@ -85,6 +87,7 @@ public class AuthService {
                                 .build();
         }
 
+        // Xác thực thông tin đăng nhập và sinh token cho người dùng hợp lệ.
         public AuthResponse login(LoginRequest request) {
                 authenticationManager.authenticate(
                                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
@@ -112,6 +115,7 @@ public class AuthService {
         }
 
         @Transactional
+        // Tạo mã đặt lại mật khẩu và gửi về email nếu tài khoản hợp lệ.
         public String forgotPassword(ForgotPasswordRequest request) {
                 // Return success message even if email not found for security
                 User user = userRepository.findByEmailIgnoreCase(request.getEmail()).orElse(null);
@@ -140,25 +144,15 @@ public class AuthService {
         }
 
         @Transactional
+        // Kiểm tra mã xác nhận rồi cập nhật mật khẩu mới cho người dùng.
         public void resetPassword(ResetPasswordRequest request) {
                 if (request.getNewPassword() == null || request.getNewPassword().length() < 6) {
                         throw new IllegalArgumentException("Mật khẩu mới phải có ít nhất 6 ký tự");
                 }
 
-                // Find valid token (This is a bit tricky since tokens are hashed)
-                // In a real high-scale app, we might use a UUID as a lookup key and a secret as the verification code.
-                // Here, since it's a small app and we have email, we'll have to iterate or change logic.
-                // Let's assume the request includes email for lookup to make hashing work efficiently, 
-                // OR we store the token as a plain UUID in DB and hash it ONLY if it's a long-term secret.
-                // But the requirement said "reset-password only needs token and newPassword".
-                
-                // Optimized approach: Get all active tokens for the user (if we had email) 
-                // OR since we don't have email, we fetch all non-used, non-expired tokens and check.
-                // Given the scale, this is fine.
-                
                 List<PasswordResetToken> activeTokens = tokenRepository.findAll().stream()
-                        .filter(t -> t.getUsedAt() == null && t.getExpiresAt().isAfter(LocalDateTime.now()))
-                        .toList();
+                                .filter(t -> t.getUsedAt() == null && t.getExpiresAt().isAfter(LocalDateTime.now()))
+                                .toList();
 
                 PasswordResetToken validToken = null;
                 for (PasswordResetToken t : activeTokens) {
@@ -173,7 +167,7 @@ public class AuthService {
                 }
 
                 User user = validToken.getUser();
-                
+
                 // Optional: Check if new password is same as old
                 if (passwordEncoder.matches(request.getNewPassword(), user.getPasswordHash())) {
                         throw new IllegalArgumentException("Mật khẩu mới không được trùng với mật khẩu hiện tại");
@@ -186,6 +180,7 @@ public class AuthService {
                 tokenRepository.save(validToken);
         }
 
+        // Sinh chuỗi ngẫu nhiên với độ dài yêu cầu để làm mã xác nhận.
         private String generateRandomCode(int length) {
                 StringBuilder sb = new StringBuilder(length);
                 for (int i = 0; i < length; i++) {
@@ -196,6 +191,7 @@ public class AuthService {
 
         @Scheduled(cron = "0 0 0 * * *") // Run daily at midnight
         @Transactional
+        // Xóa các mã đặt lại mật khẩu đã hết hạn hoặc đã được sử dụng.
         public void cleanupTokens() {
                 tokenRepository.deleteExpiredOrUsed(LocalDateTime.now());
         }

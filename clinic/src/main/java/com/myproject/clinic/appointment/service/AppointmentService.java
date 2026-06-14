@@ -30,18 +30,10 @@ public class AppointmentService {
     private final BookingValidationService bookingValidationService;
     private final SecurityUtils securityUtils;
 
-    /**
-     * LOGIC: Lấy danh sách lịch hẹn.
-     * XỬ LÝ PHÂN QUYỀN:
-     * - ADMIN / STAFF (đã được cấp quyền): Trả về toàn bộ lịch hẹn trong hệ thống (quá khứ + tương lai).
-     * - DOCTOR: Chỉ trả về lịch hẹn mà họ trực tiếp phụ trách.
-     */
     public List<AppointmentResponse> findAll() {
-        // ADMIN và STAFF có quyền xem toàn bộ dữ liệu — kiểm tra tường minh thay vì dựa vào null
         if (securityUtils.hasGlobalDataAccess()) {
             return appointmentRepository.findAll().stream().map(this::toResponse).toList();
         }
-        // DOCTOR: chỉ được xem lịch hẹn của chính mình
         Doctor doctor = securityUtils.requireCurrentDoctor();
         return appointmentRepository.findByDoctorId(doctor.getId())
                 .stream().map(this::toResponse).toList();
@@ -56,55 +48,47 @@ public class AppointmentService {
     /**
      * LOGIC: Tạo mới lịch hẹn.
      * XỬ LÝ KHÓ: Tích hợp Validation Service để kiểm tra xung đột trước khi lưu.
-     * Quy trình: Kiểm tra User tồn tại -> Kiểm tra Doctor tồn tại -> VALIDATE xung đột giờ -> Lưu DB.
-     * CẬP NHẬT: Thêm @Transactional và Pessimistic Lock để chống Race Condition khi 2 user đặt cùng lúc.
+     * Quy trình: Kiểm tra User tồn tại -> Kiểm tra Doctor tồn tại -> VALIDATE xung
+     * đột giờ -> Lưu DB.
      */
     @Transactional
     public AppointmentResponse create(AppointmentRequest request) {
         User patient = userRepository.findById(request.getPatientId())
                 .orElseThrow(() -> new ResourceNotFoundException("Bệnh nhân", request.getPatientId()));
-        
+
         Doctor doctor = null;
         if (request.getDoctorId() != null) {
             // SỬ DỤNG PESSIMISTIC LOCK: Khóa bản ghi Bác sĩ này lại.
-            // Nếu có user khác cũng đang cố đặt lịch bác sĩ này, họ sẽ phải chờ (blocking)
-            // cho đến khi transaction này hoàn thành (Lưu xong hoặc Lỗi).
+            // Nếu có user khác cũng đang cố đặt lịch bác sĩ này, họ sẽ phải chờ
             doctor = doctorRepository.findByIdForUpdate(request.getDoctorId())
                     .orElseThrow(() -> new ResourceNotFoundException("Bác sĩ", request.getDoctorId()));
             if (!"ACTIVE".equals(doctor.getUser().getStatus())) {
                 throw new IllegalArgumentException("Không thể đặt lịch hẹn với bác sĩ đã ngưng hoạt động.");
             }
         } else if (request.getHealthPackageId() != null) {
-            // Nếu đặt theo gói mà không chọn đích danh bác sĩ, hệ thống tự gán bác sĩ đầu tiên có sẵn và đang hoạt động
             doctor = doctorRepository.findAll().stream()
                     .filter(d -> "ACTIVE".equals(d.getUser().getStatus()))
                     .findFirst().orElse(null);
         }
-
-        // BƯỚC VALIDATION QUAN TRỌNG:
-        // 0. Giới hạn chống spam: Tối đa 3 lịch hẹn đang chờ
         bookingValidationService.validateMaxActiveAppointments(request.getPatientId());
 
-        // 1. Kiểm tra Bệnh nhân có bị trùng lịch ở bất kỳ dịch vụ nào khác không
-        bookingValidationService.validatePatientAvailability(request.getPatientId(), request.getAppointmentDate(), request.getAppointmentTime());
+        bookingValidationService.validatePatientAvailability(request.getPatientId(), request.getAppointmentDate(),
+                request.getAppointmentTime());
 
-        // 2. Kiểm tra Bác sĩ có đang bận vào giờ đó không (Chỉ áp dụng khi khám lẻ)
+        // 2. Kiểm tra Bác sĩ có đang bận vào giờ đó không
         if (doctor != null && request.getHealthPackageId() == null) {
-            bookingValidationService.validateDoctorAvailability(doctor.getId(), request.getAppointmentDate(), request.getAppointmentTime());
+            bookingValidationService.validateDoctorAvailability(doctor.getId(), request.getAppointmentDate(),
+                    request.getAppointmentTime());
         }
-
-        // 3. Nếu là đặt theo gói khám, kiểm tra giới hạn của gói khám đó
         if (request.getHealthPackageId() != null) {
             bookingValidationService.validateHealthPackageAvailability(
-                    request.getHealthPackageId(), 
-                    request.getAppointmentDate(), 
+                    request.getHealthPackageId(),
+                    request.getAppointmentDate(),
                     request.getAppointmentTime(),
-                    null, // Chưa có ID (đang tạo mới)
-                    true 
-            );
+                    null,
+                    true);
         }
 
-        // Ánh xạ dữ liệu và lưu xuống Database
         Appointment appointment = Appointment.builder()
                 .patient(patient)
                 .doctor(doctor)
@@ -119,7 +103,8 @@ public class AppointmentService {
 
     /**
      * LOGIC: Cập nhật thông tin lịch hẹn.
-     * XỬ LÝ: Tự động gửi Email thông báo nếu trạng thái chuyển sang CONFIRMED hoặc COMPLETED.
+     * XỬ LÝ: Tự động gửi Email thông báo nếu trạng thái chuyển sang CONFIRMED hoặc
+     * COMPLETED.
      */
     @Transactional
     public AppointmentResponse update(Long id, AppointmentRequest request) {
@@ -132,22 +117,27 @@ public class AppointmentService {
         }
 
         // Nếu thay đổi ngày giờ, phải Validate lại tính sẵn sàng
-        if (appointment.getHealthPackage() != null && (request.getAppointmentDate() != null || request.getAppointmentTime() != null)) {
+        if (appointment.getHealthPackage() != null
+                && (request.getAppointmentDate() != null || request.getAppointmentTime() != null)) {
             bookingValidationService.validateHealthPackageAvailability(
                     appointment.getHealthPackage().getId(),
-                    request.getAppointmentDate() != null ? request.getAppointmentDate() : appointment.getAppointmentDate(),
-                    request.getAppointmentTime() != null ? request.getAppointmentTime() : appointment.getAppointmentTime(),
+                    request.getAppointmentDate() != null ? request.getAppointmentDate()
+                            : appointment.getAppointmentDate(),
+                    request.getAppointmentTime() != null ? request.getAppointmentTime()
+                            : appointment.getAppointmentTime(),
                     appointment.getId(),
-                    true
-            );
+                    true);
         }
 
-        if (request.getStatus() != null) appointment.setStatus(request.getStatus());
-        if (request.getNote() != null) appointment.setNote(request.getNote());
+        if (request.getStatus() != null)
+            appointment.setStatus(request.getStatus());
+        if (request.getNote() != null)
+            appointment.setNote(request.getNote());
 
         Appointment savedAppointment = appointmentRepository.save(appointment);
-        
-        // GỬI EMAIL TỰ ĐỘNG: Thông báo cho bệnh nhân biết lịch đã được xác nhận hoặc đã hoàn thành
+
+        // GỬI EMAIL TỰ ĐỘNG: Thông báo cho bệnh nhân biết lịch đã được xác nhận hoặc đã
+        // hoàn thành
         if ("CONFIRMED".equalsIgnoreCase(savedAppointment.getStatus())
                 || "COMPLETED".equalsIgnoreCase(savedAppointment.getStatus())) {
             emailService.sendAppointmentStatusEmail(savedAppointment.getId());
