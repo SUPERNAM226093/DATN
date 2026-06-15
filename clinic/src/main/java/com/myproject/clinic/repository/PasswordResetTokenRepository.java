@@ -11,9 +11,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Giao diện Repository cung cấp các phương thức truy xuất dữ liệu từ Database cho PasswordResetToken.
- */
 @Repository
 public interface PasswordResetTokenRepository extends JpaRepository<PasswordResetToken, Long> {
 

@@ -6,9 +6,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-/**
- * Giao diện Repository cung cấp các phương thức truy xuất dữ liệu từ Database cho HealthPackageSchedule.
- */
 @Repository
 public interface HealthPackageScheduleRepository extends JpaRepository<HealthPackageSchedule, Long> {
     List<HealthPackageSchedule> findByHealthPackageId(Long healthPackageId);

@@ -11,10 +11,9 @@ interface Props {
 
 /**
  * COMPONENT: ProtectedRoute
- * MÔ TẢ: Thành phần bảo vệ các Route (Định tuyến) yêu cầu đăng nhập và phân quyền.
+ * MÔ TẢ: Thành phần bảo vệ các Route  yêu cầu đăng nhập và phân quyền.
  * - Kiểm tra nếu người dùng chưa đăng nhập -> Chuyển hướng về trang Đăng nhập (/login).
- * - Kiểm tra nếu Route chỉ cho phép một số Role cụ thể và Role của user không khớp -> Chuyển hướng về trang chủ (/).
- * - Chờ đợi cho tới khi phân quyền động (`isPermissionsLoaded`) tải xong từ Server để tránh chuyển hướng sai.
+ * - Kiểm tra nếu Route chỉ cho phép một số Role cụ thể và Role của user không khớp -> Chuyển hướng về trang chủ 
  * - Kiểm tra nếu đường dẫn hiện tại không nằm trong danh sách quyền được cấp phép (`isPathAllowed`) -> Chuyển hướng về trang cá nhân (/profile).
  */
 export default function ProtectedRoute({ allowedRoles }: Props) {
@@ -42,6 +41,5 @@ export default function ProtectedRoute({ allowedRoles }: Props) {
         return <Navigate to="/profile" replace />;
     }
 
-    // Nếu mọi điều kiện hợp lệ, hiển thị các component con nằm trong route bảo vệ này
     return <Outlet />;
 }

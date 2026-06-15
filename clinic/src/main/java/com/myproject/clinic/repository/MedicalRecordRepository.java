@@ -7,9 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Giao diện Repository cung cấp các phương thức truy xuất dữ liệu từ Database cho MedicalRecord.
- */
 @Repository
 public interface MedicalRecordRepository extends JpaRepository<MedicalRecord, Long> {
     @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"appointment", "doctor"})

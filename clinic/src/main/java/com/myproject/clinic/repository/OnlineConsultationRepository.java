@@ -10,10 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- * Giao diện Repository cung cấp các phương thức truy xuất dữ liệu từ Database
- * cho OnlineConsultation.
- */
 @Repository
 public interface OnlineConsultationRepository extends JpaRepository<OnlineConsultation, Long> {
 

@@ -29,8 +29,9 @@ public class SecurityUtils {
     /** Lấy tên Role đang đăng nhập từ SecurityContext (Token JWT). */
     public static String getCurrentUserRole() {
         var auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated()) return null;
-        
+        if (auth == null || !auth.isAuthenticated())
+            return null;
+
         // JWT Filter thêm authority "ROLE_..." vào context
         return auth.getAuthorities().stream()
                 .findFirst()
@@ -62,15 +63,16 @@ public class SecurityUtils {
     }
 
     /**
-     * Kiểm tra user hiện tại có quyền truy cập toàn cục (global data access) hay không.
+     * Kiểm tra user hiện tại có quyền truy cập toàn cục (global data access) hay
+     * không.
      * Áp dụng cho ADMIN, STAFF và tất cả các CUSTOM ROLES (Dược sĩ, Kế toán...).
      * DOCTOR bị giới hạn dữ liệu cá nhân. PATIENT/USER không có quyền quản trị.
      */
     public boolean hasGlobalDataAccess() {
         String roleName = getCurrentUser().getRoleName();
-        return !"DOCTOR".equalsIgnoreCase(roleName) 
-            && !"PATIENT".equalsIgnoreCase(roleName) 
-            && !"USER".equalsIgnoreCase(roleName);
+        return !"DOCTOR".equalsIgnoreCase(roleName)
+                && !"PATIENT".equalsIgnoreCase(roleName)
+                && !"USER".equalsIgnoreCase(roleName);
     }
 
     /**
@@ -104,20 +106,18 @@ public class SecurityUtils {
     }
 
     /**
-     * Validate quyền sở hữu: nếu là DOCTOR, doctorId của record phải khớp với doctorId hiện tại.
-     * Ghi audit log nếu bị chặn.
-     *
-     * @param resourceType tên loại tài nguyên (dùng cho log)
-     * @param resourceId   id của tài nguyên (dùng cho log)
-     * @param ownerDoctorId doctorId của record đang xét
+     * Validate quyền sở hữu: nếu là DOCTOR, doctorId của record phải khớp với
+     * doctorId hiện tại.
      */
     public void assertDoctorOwnership(String resourceType, Long resourceId, Long ownerDoctorId) {
         Doctor currentDoctor = getCurrentDoctorOrNull();
-        if (currentDoctor == null) return; // STAFF/ADMIN: bỏ qua kiểm tra
+        if (currentDoctor == null)
+            return; // STAFF/ADMIN: bỏ qua kiểm tra
 
         if (!currentDoctor.getId().equals(ownerDoctorId)) {
             User user = getCurrentUser();
-            log.warn("[SECURITY_AUDIT] UNAUTHORIZED_ACCESS | userId={} role=DOCTOR tried to access {} id={} owned by doctorId={}",
+            log.warn(
+                    "[SECURITY_AUDIT] UNAUTHORIZED_ACCESS | userId={} role=DOCTOR tried to access {} id={} owned by doctorId={}",
                     user.getId(), resourceType, resourceId, ownerDoctorId);
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                     "Bạn không có quyền truy cập tài nguyên này.");
@@ -126,10 +126,6 @@ public class SecurityUtils {
 
     /**
      * Phát hiện spoofing: bác sĩ truyền doctorId của người khác trong request body.
-     * Ghi log suspicious và trả về doctorId thực của phiên đăng nhập hiện tại.
-     *
-     * @param requestedDoctorId doctorId từ request body
-     * @return doctorId hợp lệ (luôn là doctorId của phiên hiện tại)
      */
     public Long resolveAndValidateDoctorId(Long requestedDoctorId) {
         Doctor currentDoctor = getCurrentDoctorOrNull();

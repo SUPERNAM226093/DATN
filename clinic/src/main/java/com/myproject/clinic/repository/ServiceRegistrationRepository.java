@@ -6,9 +6,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-/**
- * Giao diện Repository cung cấp các phương thức truy xuất dữ liệu từ Database cho ServiceRegistration.
- */
 @Repository
 public interface ServiceRegistrationRepository extends JpaRepository<ServiceRegistration, Long> {
     List<ServiceRegistration> findByUserId(Long userId);

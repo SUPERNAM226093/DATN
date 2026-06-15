@@ -6,9 +6,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-/**
- * Giao diện Repository cung cấp các phương thức truy xuất dữ liệu từ Database cho Prescription.
- */
 @Repository
 public interface PrescriptionRepository extends JpaRepository<Prescription, Long> {
     @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"medicalRecord", "doctor"})

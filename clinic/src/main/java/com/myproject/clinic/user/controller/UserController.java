@@ -11,9 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * Lớp điều khiển (Controller) xử lý các yêu cầu HTTP API cho thực thể User.
- */
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
@@ -21,9 +18,6 @@ public class UserController {
 
     private final UserService userService;
 
-    /**
-     * Lấy danh sách tất cả các bản ghi.
-     */
     @GetMapping
     public ResponseEntity<List<UserResponse>> getAll() {
         return ResponseEntity.ok(userService.findAll());

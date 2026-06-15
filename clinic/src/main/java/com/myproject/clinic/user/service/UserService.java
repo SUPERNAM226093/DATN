@@ -116,12 +116,14 @@ public class UserService {
                                 .existsFutureActiveAppointmentByDoctorId(doctor.getId(), today, nowTime, DONE_STATUSES);
 
                         boolean hasFutureConsultations = onlineConsultationRepository
-                                .existsFutureActiveConsultationByDoctorId(doctor.getId(), today, nowTimeStr, List.of("CANCELLED"));
+                                .existsFutureActiveConsultationByDoctorId(doctor.getId(), today, nowTimeStr,
+                                        List.of("CANCELLED"));
 
                         if (hasFutureAppointments || hasFutureConsultations) {
                             throw new IllegalArgumentException(
-                                    "Không thể khóa tài khoản bác sĩ này vì còn lịch hẹn hoặc tư vấn online chưa hoàn thành trong tương lai. " +
-                                    "Vui lòng hủy hoặc hoàn tất các lịch đó trước.");
+                                    "Không thể khóa tài khoản bác sĩ này vì còn lịch hẹn hoặc tư vấn online chưa hoàn thành trong tương lai. "
+                                            +
+                                            "Vui lòng hủy hoặc hoàn tất các lịch đó trước.");
                         }
                     });
                 }
@@ -166,11 +168,13 @@ public class UserService {
             String newPhone = request.getPhone().trim();
             if (!Objects.equals(newPhone, oldPhone)) {
                 // BE Validation independent of FE
-                if (!newPhone.matches("^(0|\\+84)(\\s|\\.)?((3[2-9])|(5[689])|(7[06-9])|(8[1-689])|(9[0-46-9]))(\\d)(\\s|\\.)?(\\d{3})(\\s|\\.)?(\\d{3})$")) {
+                if (!newPhone.matches(
+                        "^(0|\\+84)(\\s|\\.)?((3[2-9])|(5[689])|(7[06-9])|(8[1-689])|(9[0-46-9]))(\\d)(\\s|\\.)?(\\d{3})(\\s|\\.)?(\\d{3})$")) {
                     throw new IllegalArgumentException("ERR_INVALID_FORMAT: Số điện thoại không hợp lệ");
                 }
                 if (userRepository.existsByPhoneAndIdNot(newPhone, currentUserId)) {
-                    throw new IllegalArgumentException("ERR_PHONE_EXISTS: Số điện thoại này đã được sử dụng bởi tài khoản khác.");
+                    throw new IllegalArgumentException(
+                            "ERR_PHONE_EXISTS: Số điện thoại này đã được sử dụng bởi tài khoản khác.");
                 }
                 user.setPhone(newPhone);
                 isChanged = true;
@@ -179,7 +183,8 @@ public class UserService {
         }
 
         if (request.getNewPassword() != null && !request.getNewPassword().isBlank()) {
-            log.info("Updating password for user {}: new password length = {}", currentUserId, request.getNewPassword().length());
+            log.info("Updating password for user {}: new password length = {}", currentUserId,
+                    request.getNewPassword().length());
             // BE Validation: Min 6 chars
             if (request.getNewPassword().length() < 6) {
                 throw new IllegalArgumentException("ERR_INVALID_FORMAT: Mật khẩu phải có ít nhất 6 ký tự.");
@@ -202,10 +207,9 @@ public class UserService {
     public void delete(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", id));
-        
-        // Nếu là bác sĩ, xóa thông tin bác sĩ trước (hoặc ẩn đi)
+
         doctorRepository.findByUserId(user.getId()).ifPresent(doctorRepository::delete);
-        
+
         user.setStatus("DELETED");
         userRepository.save(user);
     }

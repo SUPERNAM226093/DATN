@@ -19,9 +19,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Lớp dịch vụ (Service) xử lý logic nghiệp vụ và dữ liệu cho thực thể RoomBooking.
- */
 @Service
 @RequiredArgsConstructor
 public class RoomBookingService {
@@ -31,14 +28,11 @@ public class RoomBookingService {
     private final UserRepository userRepository;
     private final BookingValidationService bookingValidationService;
 
-    /**
-     * Phương thức: Tạo mới đặt chỗ.
-     */
     @Transactional
     public RoomBookingDTO createBooking(Long userId, RoomBookingRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        
+
         Room room = roomRepository.findById(request.getRoomId())
                 .orElseThrow(() -> new RuntimeException("Room not found"));
 
@@ -46,12 +40,15 @@ public class RoomBookingService {
         bookingValidationService.validateMaxActiveRoomBookings(userId);
 
         // 2. Check Overlap
-        bookingValidationService.validateRoomAvailability(request.getRoomId(), request.getCheckInDate(), request.getCheckOutDate());
+        bookingValidationService.validateRoomAvailability(request.getRoomId(), request.getCheckInDate(),
+                request.getCheckOutDate());
 
         // 3. Calculate nights and total fee
         long nights = Duration.between(request.getCheckInDate(), request.getCheckOutDate()).toDays();
-        if (nights <= 0) nights = 1; // Minimum 1 night
-        if (nights > 30) throw new RuntimeException("Maximum booking duration is 30 nights.");
+        if (nights <= 0)
+            nights = 1; // Minimum 1 night
+        if (nights > 30)
+            throw new RuntimeException("Maximum booking duration is 30 nights.");
 
         BigDecimal pricePerNight = room.getPricePerNight() != null ? room.getPricePerNight() : BigDecimal.ZERO;
         BigDecimal cleaningFee = room.getCleaningFee() != null ? room.getCleaningFee() : BigDecimal.ZERO;
@@ -115,9 +112,10 @@ public class RoomBookingService {
         Room room = booking.getRoom();
 
         String oldStatus = booking.getStatus();
-        
+
         if ("CONFIRMED".equals(newStatus)) {
-            if (!"PENDING".equals(oldStatus)) throw new RuntimeException("Can only confirm PENDING bookings");
+            if (!"PENDING".equals(oldStatus))
+                throw new RuntimeException("Can only confirm PENDING bookings");
             if (room.getAvailableBeds() != null && room.getAvailableBeds() <= 0) {
                 throw new RuntimeException("Room has no available beds");
             }
@@ -127,13 +125,16 @@ public class RoomBookingService {
                 room.setAvailableBeds(room.getAvailableBeds() - 1);
             }
         } else if ("REJECTED".equals(newStatus)) {
-            if (!"PENDING".equals(oldStatus)) throw new RuntimeException("Can only reject PENDING bookings");
+            if (!"PENDING".equals(oldStatus))
+                throw new RuntimeException("Can only reject PENDING bookings");
             booking.setRejectReason(reason);
         } else if ("CHECKED_IN".equals(newStatus)) {
-            if (!"CONFIRMED".equals(oldStatus)) throw new RuntimeException("Can only check-in CONFIRMED bookings");
+            if (!"CONFIRMED".equals(oldStatus))
+                throw new RuntimeException("Can only check-in CONFIRMED bookings");
             booking.setActualCheckInAt(LocalDateTime.now());
         } else if ("CHECKED_OUT".equals(newStatus)) {
-            if (!"CHECKED_IN".equals(oldStatus)) throw new RuntimeException("Can only check-out CHECKED_IN bookings");
+            if (!"CHECKED_IN".equals(oldStatus))
+                throw new RuntimeException("Can only check-out CHECKED_IN bookings");
             booking.setActualCheckOutAt(LocalDateTime.now());
             // Release bed
             if (room.getAvailableBeds() != null) {
@@ -162,7 +163,8 @@ public class RoomBookingService {
      * Phương thức: Map sang d t o.
      */
     private RoomBookingDTO mapToDTO(RoomBooking booking) {
-        if (booking == null) return null;
+        if (booking == null)
+            return null;
 
         RoomBookingDTO.RoomInfo roomInfo = null;
         if (booking.getRoom() != null) {
@@ -256,18 +258,21 @@ public class RoomBookingService {
 
         // Only validate overlap if dates changed or room changed
         if (!booking.getRoom().getId().equals(request.getRoomId()) ||
-            !booking.getCheckInDate().equals(request.getCheckInDate()) ||
-            !booking.getCheckOutDate().equals(request.getCheckOutDate())) {
-            
-            // Should exclude current booking from validation, but for simplicity we rely on the existing logic
-            // Assuming BookingValidationService has a way or we just catch it. 
+                !booking.getCheckInDate().equals(request.getCheckInDate()) ||
+                !booking.getCheckOutDate().equals(request.getCheckOutDate())) {
+
+            // Should exclude current booking from validation, but for simplicity we rely on
+            // the existing logic
+            // Assuming BookingValidationService has a way or we just catch it.
             // In a robust system, we pass the bookingId to exclude it.
             // For now, we will just call it.
         }
 
         long nights = Duration.between(request.getCheckInDate(), request.getCheckOutDate()).toDays();
-        if (nights <= 0) nights = 1;
-        if (nights > 30) throw new RuntimeException("Maximum booking duration is 30 nights.");
+        if (nights <= 0)
+            nights = 1;
+        if (nights > 30)
+            throw new RuntimeException("Maximum booking duration is 30 nights.");
 
         BigDecimal pricePerNight = room.getPricePerNight() != null ? room.getPricePerNight() : BigDecimal.ZERO;
         BigDecimal cleaningFee = room.getCleaningFee() != null ? room.getCleaningFee() : BigDecimal.ZERO;
@@ -286,7 +291,7 @@ public class RoomBookingService {
         booking.setEstimatedFee(totalFee);
         booking.setSpecialNotes(request.getSpecialNotes());
         booking.setContactPhone(request.getContactPhone());
-        
+
         if (request.getStatus() != null) {
             booking.setStatus(request.getStatus());
         }

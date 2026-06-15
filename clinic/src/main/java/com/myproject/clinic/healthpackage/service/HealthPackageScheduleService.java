@@ -13,7 +13,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
- * Lớp dịch vụ (Service) xử lý logic nghiệp vụ và dữ liệu cho thực thể HealthPackageSchedule.
+ * Lớp dịch vụ (Service) xử lý logic nghiệp vụ và dữ liệu cho thực thể
+ * HealthPackageSchedule.
  */
 @Service
 @RequiredArgsConstructor
@@ -22,24 +23,15 @@ public class HealthPackageScheduleService {
     private final HealthPackageScheduleRepository scheduleRepository;
     private final HealthPackageRepository healthPackageRepository;
 
-    /**
-     * Lấy danh sách tất cả các bản ghi.
-     */
     public List<HealthPackageScheduleResponse> findAll() {
         return scheduleRepository.findAll().stream().map(this::toResponse).toList();
     }
 
-    /**
-     * Tìm kiếm và lấy thông tin chi tiết của bản ghi theo mã định danh ID.
-     */
     public HealthPackageScheduleResponse findById(Long id) {
         return toResponse(scheduleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("HealthPackageSchedule", id)));
     }
 
-    /**
-     * Phương thức: Tìm kiếm theo health package id.
-     */
     public List<HealthPackageScheduleResponse> findByHealthPackageId(Long healthPackageId) {
         return scheduleRepository.findByHealthPackageId(healthPackageId)
                 .stream().map(this::toResponse).toList();
@@ -90,7 +82,8 @@ public class HealthPackageScheduleService {
     }
 
     /**
-     * Chuyển đổi đối tượng thực thể (Entity) sang định dạng phản hồi (Response DTO).
+     * Chuyển đổi đối tượng thực thể (Entity) sang định dạng phản hồi (Response
+     * DTO).
      */
     private HealthPackageScheduleResponse toResponse(HealthPackageSchedule s) {
         return HealthPackageScheduleResponse.builder()

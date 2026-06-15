@@ -19,28 +19,21 @@ public class BookingValidationService {
     private final OnlineConsultationRepository consultationRepository;
     private final HealthPackageBookingRepository healthPackageRepository;
     private final RoomBookingRepository roomBookingRepository;
-
-    // Danh sách các trạng thái không gây xung đột (Đã hủy, Bị từ chối hoặc Đã hoàn thành)
     private final List<String> IGNORED_STATUSES = List.of("CANCELLED", "REJECTED", "COMPLETED");
     private final List<String> ACTIVE_STATUSES = List.of("PENDING", "PAID");
 
     /**
      * LOGIC 1: Kiểm tra sự sẵn sàng của Bệnh nhân trên TẤT CẢ các dịch vụ.
-     * GIẢI THÍCH: Một bệnh nhân không thể ở hai nơi cùng một lúc. 
-     * Hàm này quét qua bảng Lịch hẹn, Tư vấn Online và Gói khám để đảm bảo không bị trùng giờ.
      */
     public void validatePatientAvailability(Long patientId, LocalDate date, LocalTime parsedTime) {
-        // Kiểm tra xung đột đa dịch vụ: 
-        // 1. Appointment (Khám tại phòng)
-        // 2. Online Consultation (Tư vấn Video)
-        // 3. Health Package (Khám theo gói)
-        boolean hasConflict = 
-            appointmentRepository.existsByPatientIdAndAppointmentDateAndAppointmentTimeAndStatusNotIn(
+
+        boolean hasConflict = appointmentRepository.existsByPatientIdAndAppointmentDateAndAppointmentTimeAndStatusNotIn(
                 patientId, date, parsedTime, IGNORED_STATUSES) ||
-            consultationRepository.existsByPatientIdAndConsultationDateAndConsultationTimeAndPaymentStatusNotIn(
-                patientId, date, parsedTime.toString().substring(0, 5), IGNORED_STATUSES) ||
-            healthPackageRepository.existsByPatientIdAndBookingDateAndBookingTimeAndStatusNotIn(
-                patientId, date, parsedTime, IGNORED_STATUSES);
+                consultationRepository.existsByPatientIdAndConsultationDateAndConsultationTimeAndPaymentStatusNotIn(
+                        patientId, date, parsedTime.toString().substring(0, 5), IGNORED_STATUSES)
+                ||
+                healthPackageRepository.existsByPatientIdAndBookingDateAndBookingTimeAndStatusNotIn(
+                        patientId, date, parsedTime, IGNORED_STATUSES);
 
         if (hasConflict) {
             // Nếu phát hiện bất kỳ bản ghi nào trùng khớp -> Ném lỗi 409 Conflict
@@ -50,13 +43,13 @@ public class BookingValidationService {
 
     /**
      * LOGIC 2: Kiểm tra sự sẵn sàng của Bác sĩ.
-     * Đảm bảo bác sĩ không bị gán hai ca khám (Offline hoặc Online) cùng một thời điểm.
      */
     public void validateDoctorAvailability(Long doctorId, LocalDate date, LocalTime parsedTime) {
         // Kiểm tra trong bảng lịch khám tại chỗ
         if (appointmentRepository.existsByDoctorIdAndAppointmentDateAndAppointmentTimeAndStatusNotIn(
                 doctorId, date, parsedTime, IGNORED_STATUSES)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Bác sĩ hiện đã có lịch khám tại phòng vào khung giờ này.");
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Bác sĩ hiện đã có lịch khám tại phòng vào khung giờ này.");
         }
 
         // Kiểm tra trong bảng tư vấn trực tuyến (Online)
@@ -68,52 +61,57 @@ public class BookingValidationService {
 
     /**
      * LOGIC 3: Kiểm tra tính sẵn sàng của Phòng (Room Availability).
-     * XỬ LÝ KHÓ: Sử dụng logic "Overlapping Date" (Ngày đè lên nhau). 
-     * Một phòng chỉ được đặt nếu khoảng thời gian [Check-in, Check-out] mới không giao thoa với các đơn đặt trước đó.
      */
     public void validateRoomAvailability(Long roomId, LocalDateTime checkIn, LocalDateTime checkOut) {
-        // findFirstOverlappingBooking: Tìm bản ghi đầu tiên có thời gian giao thoa trong DB
-        com.myproject.clinic.entity.RoomBooking overlap = roomBookingRepository.findFirstOverlappingBooking(roomId, checkIn, checkOut, IGNORED_STATUSES);
-        
+        // findFirstOverlappingBooking: Tìm bản ghi đầu tiên có thời gian giao thoa
+        // trong DB
+        com.myproject.clinic.entity.RoomBooking overlap = roomBookingRepository.findFirstOverlappingBooking(roomId,
+                checkIn, checkOut, IGNORED_STATUSES);
+
         if (overlap != null) {
             String startStr = overlap.getCheckInDate().toLocalDate().toString();
             String endStr = overlap.getCheckOutDate().toLocalDate().toString();
-            throw new ResponseStatusException(HttpStatus.CONFLICT, 
-                "Phòng này hiện đã được đặt từ " + startStr + " đến " + endStr + ". Vui lòng chọn ngày khác.");
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Phòng này hiện đã được đặt từ " + startStr + " đến " + endStr + ". Vui lòng chọn ngày khác.");
         }
     }
 
     /**
      * LOGIC 4: Kiểm tra sự sẵn sàng của Gói khám (Health Package).
-     * GIẢI THÍCH: Gói khám là tài nguyên dùng chung. Cần kiểm tra xem tại giờ đó có quá tải hay không.
-     * @param currentBookingId Dùng để loại bỏ chính bản ghi đang sửa khỏi danh sách kiểm tra (Tránh tự xung đột với mình).
      */
-    public void validateHealthPackageAvailability(Long healthPackageId, LocalDate date, LocalTime parsedTime, Long currentBookingId, boolean isAppointmentFlow) {
-        
+    public void validateHealthPackageAvailability(Long healthPackageId, LocalDate date, LocalTime parsedTime,
+            Long currentBookingId, boolean isAppointmentFlow) {
+
         // Bước 1: Kiểm tra trong bảng Appointment (Lịch khám lẻ có gán gói)
         boolean existsInAppointments;
         if (isAppointmentFlow && currentBookingId != null) {
             // Khi Cập nhật (Update): Phải dùng `IdNot` để bỏ qua bản ghi hiện tại
-            existsInAppointments = appointmentRepository.existsByHealthPackageIdAndAppointmentDateAndAppointmentTimeAndStatusNotInAndIdNot(
-                    healthPackageId, date, parsedTime, IGNORED_STATUSES, currentBookingId);
+            existsInAppointments = appointmentRepository
+                    .existsByHealthPackageIdAndAppointmentDateAndAppointmentTimeAndStatusNotInAndIdNot(
+                            healthPackageId, date, parsedTime, IGNORED_STATUSES, currentBookingId);
         } else {
             // Khi Tạo mới (Create)
-            existsInAppointments = appointmentRepository.existsByHealthPackageIdAndAppointmentDateAndAppointmentTimeAndStatusNotIn(
-                    healthPackageId, date, parsedTime, IGNORED_STATUSES);
+            existsInAppointments = appointmentRepository
+                    .existsByHealthPackageIdAndAppointmentDateAndAppointmentTimeAndStatusNotIn(
+                            healthPackageId, date, parsedTime, IGNORED_STATUSES);
         }
 
         if (existsInAppointments) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Gói khám này đã đạt giới hạn đăng ký vào giờ đã chọn.");
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Gói khám này đã đạt giới hạn đăng ký vào giờ đã chọn.");
         }
 
-        // Bước 2: Kiểm tra tương tự trong bảng HealthPackageBooking (Đăng ký gói chuyên sâu)
+        // Bước 2: Kiểm tra tương tự trong bảng HealthPackageBooking (Đăng ký gói chuyên
+        // sâu)
         boolean existsInBookings;
         if (!isAppointmentFlow && currentBookingId != null) {
-            existsInBookings = healthPackageRepository.existsByHealthPackageIdAndBookingDateAndBookingTimeAndStatusNotInAndIdNot(
-                    healthPackageId, date, parsedTime, IGNORED_STATUSES, currentBookingId);
+            existsInBookings = healthPackageRepository
+                    .existsByHealthPackageIdAndBookingDateAndBookingTimeAndStatusNotInAndIdNot(
+                            healthPackageId, date, parsedTime, IGNORED_STATUSES, currentBookingId);
         } else {
-            existsInBookings = healthPackageRepository.existsByHealthPackageIdAndBookingDateAndBookingTimeAndStatusNotIn(
-                    healthPackageId, date, parsedTime, IGNORED_STATUSES);
+            existsInBookings = healthPackageRepository
+                    .existsByHealthPackageIdAndBookingDateAndBookingTimeAndStatusNotIn(
+                            healthPackageId, date, parsedTime, IGNORED_STATUSES);
         }
 
         if (existsInBookings) {
@@ -124,64 +122,69 @@ public class BookingValidationService {
     /**
      * LOGIC 5: Kiểm tra Tư vấn trực tuyến (Online Consultation).
      * XỬ LÝ PHỨC TẠP: Cần kiểm tra chéo (Cross-check) cả phía Bệnh nhân và Bác sĩ.
-     * Đảm bảo tính toàn vẹn dữ liệu: Bác sĩ không bận khám  và Bệnh nhân cũng không bận khám dịch vụ khác.
      */
-    public void validateOnlineConsultationAvailability(Long patientId, Long doctorId, LocalDate date, LocalTime parsedTime, Long currentConsultationId) {
+    public void validateOnlineConsultationAvailability(Long patientId, Long doctorId, LocalDate date,
+            LocalTime parsedTime, Long currentConsultationId) {
         String timeStr = parsedTime.toString().substring(0, 5); // Chuyển định dạng giờ về HH:mm
-        
+
         // 1. Kiểm tra xung đột phía Bệnh nhân (Chỉ trong bảng tư vấn Online)
         boolean patientConflict;
         if (currentConsultationId != null) {
-            patientConflict = consultationRepository.existsByPatientIdAndConsultationDateAndConsultationTimeAndPaymentStatusNotInAndIdNot(
-                patientId, date, timeStr, IGNORED_STATUSES, currentConsultationId);
+            patientConflict = consultationRepository
+                    .existsByPatientIdAndConsultationDateAndConsultationTimeAndPaymentStatusNotInAndIdNot(
+                            patientId, date, timeStr, IGNORED_STATUSES, currentConsultationId);
         } else {
-            patientConflict = consultationRepository.existsByPatientIdAndConsultationDateAndConsultationTimeAndPaymentStatusNotIn(
-                patientId, date, timeStr, IGNORED_STATUSES);
+            patientConflict = consultationRepository
+                    .existsByPatientIdAndConsultationDateAndConsultationTimeAndPaymentStatusNotIn(
+                            patientId, date, timeStr, IGNORED_STATUSES);
         }
-        
+
         if (patientConflict) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Bạn đang có một yêu cầu tư vấn Online khác cùng giờ.");
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Bạn đang có một yêu cầu tư vấn Online khác cùng giờ.");
         }
 
         // 2. Kiểm tra xung đột phía Bác sĩ (Chỉ trong bảng tư vấn Online)
         boolean doctorConflict;
         if (currentConsultationId != null) {
-            doctorConflict = consultationRepository.existsByDoctorIdAndConsultationDateAndConsultationTimeAndPaymentStatusNotInAndIdNot(
-                doctorId, date, timeStr, IGNORED_STATUSES, currentConsultationId);
+            doctorConflict = consultationRepository
+                    .existsByDoctorIdAndConsultationDateAndConsultationTimeAndPaymentStatusNotInAndIdNot(
+                            doctorId, date, timeStr, IGNORED_STATUSES, currentConsultationId);
         } else {
-            doctorConflict = consultationRepository.existsByDoctorIdAndConsultationDateAndConsultationTimeAndPaymentStatusNotIn(
-                doctorId, date, timeStr, IGNORED_STATUSES);
+            doctorConflict = consultationRepository
+                    .existsByDoctorIdAndConsultationDateAndConsultationTimeAndPaymentStatusNotIn(
+                            doctorId, date, timeStr, IGNORED_STATUSES);
         }
 
         if (doctorConflict) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Bác sĩ đã có lịch tư vấn trực tuyến với bệnh nhân khác.");
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Bác sĩ đã có lịch tư vấn trực tuyến với bệnh nhân khác.");
         }
-        
-        // 3. KIỂM TRA CHÉO (QUAN TRỌNG): 
-        // Bác sĩ/Bệnh nhân có bận khám OFFLINE (tại phòng) hoặc khám gói không?
-        
+
         // Bác sĩ:
         if (appointmentRepository.existsByDoctorIdAndAppointmentDateAndAppointmentTimeAndStatusNotIn(
                 doctorId, date, parsedTime, IGNORED_STATUSES)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Bác sĩ hiện đã có lịch khám tại phòng vào khung giờ này.");
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Bác sĩ hiện đã có lịch khám tại phòng vào khung giờ này.");
         }
-        
+
         // Bệnh nhân:
         if (appointmentRepository.existsByPatientIdAndAppointmentDateAndAppointmentTimeAndStatusNotIn(
                 patientId, date, parsedTime, IGNORED_STATUSES) ||
-            healthPackageRepository.existsByPatientIdAndBookingDateAndBookingTimeAndStatusNotIn(
-                patientId, date, parsedTime, IGNORED_STATUSES)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Bệnh nhân đã có một lịch khám khác vào khung giờ này.");
+                healthPackageRepository.existsByPatientIdAndBookingDateAndBookingTimeAndStatusNotIn(
+                        patientId, date, parsedTime, IGNORED_STATUSES)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Bệnh nhân đã có một lịch khám khác vào khung giờ này.");
         }
     }
-    
 
     public void validateMaxActiveAppointments(Long patientId) {
         long count = appointmentRepository.findByPatientId(patientId).stream()
                 .filter(a -> !"CANCELLED".equals(a.getStatus()) && !"COMPLETED".equals(a.getStatus()))
                 .count();
         if (count >= 3) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bạn đã đạt giới hạn tối đa 3 lượt lịch hẹn khám đang chờ. Vui lòng chờ khám xong hoặc hủy bớt để đặt thêm.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Bạn đã đạt giới hạn tối đa 3 lượt lịch hẹn khám đang chờ. Vui lòng chờ khám xong hoặc hủy bớt để đặt thêm.");
         }
     }
 
@@ -190,7 +193,8 @@ public class BookingValidationService {
                 .filter(b -> !"CANCELLED".equals(b.getStatus()) && !"COMPLETED".equals(b.getStatus()))
                 .count();
         if (count >= 3) {
-             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bạn đã đạt giới hạn tối đa 3 lượt xét duyệt gói khám đang chờ. Vui lòng chờ khám xong hoặc hủy bớt để đặt thêm.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Bạn đã đạt giới hạn tối đa 3 lượt xét duyệt gói khám đang chờ. Vui lòng chờ khám xong hoặc hủy bớt để đặt thêm.");
         }
     }
 
@@ -199,7 +203,8 @@ public class BookingValidationService {
                 .filter(b -> !"CANCELLED".equals(b.getStatus()) && !"COMPLETED".equals(b.getStatus()))
                 .count();
         if (count >= 3) {
-             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bạn đã đạt giới hạn tối đa 3 lượt đặt chỗ ở đang hoạt động. Vui lòng chờ sử dụng xong hoặc hủy bớt để đặt thêm.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Bạn đã đạt giới hạn tối đa 3 lượt đặt chỗ ở đang hoạt động. Vui lòng chờ sử dụng xong hoặc hủy bớt để đặt thêm.");
         }
     }
 }

@@ -9,9 +9,6 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- * Giao diện Repository cung cấp các phương thức truy xuất dữ liệu từ Database cho RoomBooking.
- */
 @Repository
 public interface RoomBookingRepository extends JpaRepository<RoomBooking, Long> {
     
