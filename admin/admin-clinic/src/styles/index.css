@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  /* Colors - Premium Emerald Green Theme */
+  /* Theme chung của admin FE: màu nền, màu chữ và màu nhấn toàn hệ quản trị */
   --bg-primary: #f8faff;
   --bg-secondary: #5ca1ff;
   --bg-tertiary: #f0f7ff;
@@ -37,7 +37,7 @@
   --accent-lavender: #000000;
   --accent-lavender-light: #f1f5f9;
 
-  /* Gradients - Emerald Green Variations */
+  /* Gradient dùng chung cho nút, card và các khối nổi bật */
   --gradient-primary: linear-gradient(135deg, #2e5bff, #1d4ed8);
   --gradient-success: linear-gradient(135deg, #10b981, #059669);
   --gradient-warning: linear-gradient(135deg, #f59e0b, #fbbf24);
@@ -45,26 +45,26 @@
   --gradient-info: linear-gradient(135deg, #3b82f6, #60a5fa);
   --gradient-card: linear-gradient(145deg, #ffffff, #f8fafc);
 
-  /* Shadows */
+  /* Đổ bóng dùng chung cho card, modal và panel */
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
   --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.12);
   --shadow-glow: 0 0 15px rgba(16, 185, 129, 0.1);
 
-  /* Radius */
+  /* Bo góc chuẩn dùng chung toàn admin */
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 14px;
   --radius-xl: 20px;
   --radius-full: 9999px;
 
-  /* Spacing */
+  /* Kích thước layout cố định như sidebar và header */
   --sidebar-width: 260px;
   --sidebar-collapsed: 72px;
   --header-height: 64px;
 
-  /* Transitions */
+  /* Tốc độ chuyển động dùng chung cho hiệu ứng hover và mở hộp thoại */
   --transition-fast: 150ms ease;
   --transition-base: 250ms ease;
   --transition-slow: 400ms ease;
@@ -107,7 +107,7 @@ a:hover {
   color: var(--accent-primary-hover);
 }
 
-/* Scrollbar */
+/* Thanh cuộn dùng chung cho admin */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -126,7 +126,7 @@ a:hover {
   background: var(--border-light);
 }
 
-/* ============ BUTTONS ============ */
+/* ============ Nút bấm dùng chung toàn admin ============ */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -206,7 +206,7 @@ a:hover {
   color: var(--text-primary);
 }
 
-/* ============ FORMS ============ */
+/* ============ Form dùng chung cho các màn CRUD admin ============ */
 .form-group {
   display: flex;
   flex-direction: column;
@@ -271,7 +271,7 @@ textarea.form-control {
   border-top: 1px solid var(--border-color);
 }
 
-/* ============ TABLES ============ */
+/* ============ Bảng dữ liệu dùng chung cho admin ============ */
 .table-container {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
@@ -339,7 +339,7 @@ tbody tr:last-child td {
   gap: 4px;
 }
 
-/* ============ CARDS ============ */
+/* ============ Card dùng chung cho các khối nội dung admin ============ */
 .card {
   background: var(--gradient-card);
   border: 1px solid var(--border-color);
@@ -353,7 +353,7 @@ tbody tr:last-child td {
   box-shadow: var(--shadow-md);
 }
 
-/* ============ STATUS BADGES ============ */
+/* ============ Badge trạng thái dùng chung ============ */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -391,7 +391,7 @@ tbody tr:last-child td {
   color: var(--accent-primary);
 }
 
-/* ============ PAGE LAYOUTS ============ */
+/* ============ Bố cục trang chung của admin ============ */
 .page-container {
   padding: 28px;
   animation: fadeIn 0.3s ease;
@@ -416,7 +416,7 @@ tbody tr:last-child td {
   margin-top: 4px;
 }
 
-/* ============ STATS GRID ============ */
+/* ============ Dashboard và lưới thống kê chung ============ */
 /* Modern Dashboard Layout */
 .dashboard-wrapper {
   padding: 1.5rem;
@@ -694,7 +694,7 @@ tbody tr:last-child td {
   box-shadow: var(--shadow-sm);
 }
 
-/* ============ MODAL ============ */
+/* ============ Modal dùng chung toàn admin ============ */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -732,7 +732,7 @@ tbody tr:last-child td {
   font-weight: 600;
 }
 
-/* ============ CONFIRM DIALOG ============ */
+/* ============ Hộp thoại xác nhận dùng chung ============ */
 .confirm-overlay {
   position: fixed;
   inset: 0;
@@ -774,7 +774,7 @@ tbody tr:last-child td {
   justify-content: center;
 }
 
-/* ============ EMPTY STATE ============ */
+/* ============ Trạng thái rỗng dùng chung ============ */
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -790,7 +790,7 @@ tbody tr:last-child td {
   opacity: 0.5;
 }
 
-/* ============ LOADING ============ */
+/* ============ Loading dùng chung ============ */
 .loading-spinner {
   display: flex;
   align-items: center;
@@ -807,7 +807,7 @@ tbody tr:last-child td {
   animation: spin 0.7s linear infinite;
 }
 
-/* ============ ANIMATIONS ============ */
+/* ============ Hiệu ứng chuyển động dùng chung ============ */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -836,7 +836,7 @@ tbody tr:last-child td {
   }
 }
 
-/* ============ TOAST OVERRIDES ============ */
+/* ============ Tùy chỉnh toast theo theme admin ============ */
 .Toastify__toast {
   background: var(--bg-card) !important;
   color: var(--text-primary) !important;
@@ -854,7 +854,7 @@ tbody tr:last-child td {
   background: var(--gradient-primary) !important;
 }
 
-/* ============ ORDER MANAGEMENT UTILITIES ============ */
+/* ============ Các utility và alias dùng lại ở nhiều màn admin ============ */
 
 /* Alias form-input → form-control */
 .form-input {

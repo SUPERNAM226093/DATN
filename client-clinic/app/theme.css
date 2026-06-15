@@ -3,11 +3,11 @@
 
 
 /* ═══════════════════════════════════════════════════════
-   MEDPRO — UNIFIED THEME TOKENS
-   Palette: Dark Green / Teal / Light Green / White
+   THEME CHUNG CỦA CLIENT FE
+   Bảng màu tổng: xanh đậm / teal / xanh nhạt / trắng
    ═══════════════════════════════════════════════════════ */
 :root {
-  /* ── Brand Colors ── */
+  /* ── Màu thương hiệu chung của client ── */
   --green-dark:      #0d6b52;   /* xanh đậm – primary */
   --green-mid:       #10866a;   /* xanh vừa */
   --green-teal:      #0ea882;   /* teal accent */
@@ -17,7 +17,7 @@
   --teal-bright:     #06b6d4;   /* cyan highlight */
   --teal-light:      #cffafe;   /* cyan nhạt */
 
-  /* ── Semantic ── */
+  /* ── Màu ngữ nghĩa chung: nền, chữ, viền ── */
   --bg-page:         #f0fdf8;
   --bg-section:      #ffffff;
   --bg-card:         #ffffff;
@@ -34,7 +34,7 @@
   --border-light:    #d1faf0;
   --border-dark:     #0d6b52;
 
-  /* ── Buttons ── */
+  /* ── Biến màu dùng chung cho nút bấm ── */
   --btn-primary-bg:       #0d6b52;
   --btn-primary-hover:    #0a5241;
   --btn-primary-text:     #ffffff;
@@ -46,7 +46,7 @@
   --btn-outline-border:   #0ea882;
   --btn-outline-text:     #0ea882;
 
-  /* ── Status Colors ── */
+  /* ── Màu trạng thái chung như success, warning, danger ── */
   --success:       #10b981;
   --success-light: #d1fae5;
   --warning:       #f59e0b;
@@ -56,14 +56,14 @@
   --info:          #06b6d4;
   --info-light:    #cffafe;
 
-  /* ── Shadows ── */
+  /* ── Độ đổ bóng dùng chung cho card, nút, popup ── */
   --shadow-sm:  0 1px 4px rgba(13, 107, 82, 0.08);
   --shadow-md:  0 4px 16px rgba(13, 107, 82, 0.12);
   --shadow-lg:  0 8px 32px rgba(13, 107, 82, 0.16);
   --shadow-xl:  0 16px 48px rgba(13, 107, 82, 0.2);
   --shadow-glow: 0 0 20px rgba(14, 168, 130, 0.25);
 
-  /* ── Radius ── */
+  /* ── Bo góc chuẩn dùng chung toàn client ── */
   --radius-xs: 4px;
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -71,10 +71,10 @@
   --radius-xl: 24px;
   --radius-full: 9999px;
 
-  /* ── Typography ── */
+  /* ── Font chữ mặc định của client ── */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
-  /* ── Transitions ── */
+  /* ── Tốc độ chuyển động dùng chung ── */
   --transition-fast: 150ms ease;
   --transition-base: 250ms ease;
   --transition-slow: 400ms ease;
@@ -91,7 +91,8 @@
 }
 
 /* ═══════════════════════════════════════════════════════
-   TAILWIND THEME BRIDGE
+   CẦU NỐI THEME GIỮA CSS VARIABLES VÀ TAILWIND
+   Dùng để map màu/chữ chung của client sang utility của Tailwind
    ═══════════════════════════════════════════════════════ */
 @theme inline {
   --color-background: var(--bg-page);
@@ -100,7 +101,8 @@
 }
 
 /* ═══════════════════════════════════════════════════════
-   BASE RESET
+   RESET NỀN CHUNG TOÀN CLIENT
+   Áp dụng các rule gốc cho html, body và toàn bộ phần tử
    ═══════════════════════════════════════════════════════ */
 *, *::before, *::after {
   box-sizing: border-box;
@@ -127,7 +129,8 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════
-   TYPOGRAPHY
+   KIỂU CHỮ CHUNG CỦA CLIENT
+   Định nghĩa style mặc định cho heading, link và văn bản cơ bản
    ═══════════════════════════════════════════════════════ */
 h1, h2, h3, h4, h5, h6 {
   color: var(--text-primary);
@@ -145,7 +148,8 @@ a:hover {
 }
 
 /* ═══════════════════════════════════════════════════════
-   SCROLLBAR
+   THANH CUỘN DÙNG CHUNG CHO CLIENT
+   Tùy biến scrollbar để đồng bộ với màu theme tổng
    ═══════════════════════════════════════════════════════ */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
@@ -160,7 +164,8 @@ a:hover {
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
 /* ═══════════════════════════════════════════════════════
-   BUTTONS — GLOBAL
+   NÚT BẤM DÙNG CHUNG TOÀN CLIENT
+   Gom style chuẩn cho các nút chính xuất hiện ở nhiều màn hình
    ═══════════════════════════════════════════════════════ */
 .btn-premium,
 button.btn-primary-global,
@@ -193,7 +198,8 @@ button.btn-primary-global,
 }
 
 /* ═══════════════════════════════════════════════════════
-   CARDS
+   CARD DÙNG CHUNG CỦA CLIENT
+   Định nghĩa nền, viền, bo góc và hover cho các khối nội dung
    ═══════════════════════════════════════════════════════ */
 .card-premium {
   background: var(--bg-card);
@@ -209,7 +215,8 @@ button.btn-primary-global,
 }
 
 /* ═══════════════════════════════════════════════════════
-   SECTION BACKGROUNDS (dùng cho các section trang)
+   NỀN CHUNG CHO CÁC SECTION TRANG CLIENT
+   Cung cấp các lớp nền sáng/tối để ráp bố cục landing page
    ═══════════════════════════════════════════════════════ */
 .section-white   { background: #ffffff; }
 .section-pale    { background: var(--green-pale); }
@@ -217,7 +224,8 @@ button.btn-primary-global,
 .section-dark    { background: var(--green-dark); color: #fff; }
 
 /* ═══════════════════════════════════════════════════════
-   BADGES / TAGS
+   BADGE VÀ TAG DÙNG CHUNG
+   Áp dụng cho nhãn nhỏ, trạng thái ngắn và các chip hiển thị nhanh
    ═══════════════════════════════════════════════════════ */
 .badge-green {
   display: inline-flex;
@@ -247,7 +255,8 @@ button.btn-primary-global,
 }
 
 /* ═══════════════════════════════════════════════════════
-   FORM INPUTS (global override)
+   INPUT FORM DÙNG CHUNG TOÀN CLIENT
+   Chuẩn hóa trạng thái focus cho input, select và textarea
    ═══════════════════════════════════════════════════════ */
 input:focus,
 select:focus,
@@ -258,7 +267,8 @@ textarea:focus {
 }
 
 /* ═══════════════════════════════════════════════════════
-   CHATBOT WIDGET — Green override
+   TÙY CHỈNH GIAO DIỆN CHATBOT THEO THEME CLIENT
+   Ép màu cho nút, header và bubble chat để khớp tone chung
    ═══════════════════════════════════════════════════════ */
 /* Nút mở chatbot */
 .chat-widget-trigger,
@@ -299,7 +309,8 @@ textarea:focus {
 }
 
 /* ═══════════════════════════════════════════════════════
-   NAVBAR — Green tones
+   MÀU HOVER CHUNG CHO NAVBAR CLIENT
+   Giữ link điều hướng cùng tone xanh của toàn giao diện
    ═══════════════════════════════════════════════════════ */
 nav a:hover,
 nav [class*="nav-link"]:hover {
@@ -307,7 +318,8 @@ nav [class*="nav-link"]:hover {
 }
 
 /* ═══════════════════════════════════════════════════════
-   ANIMATIONS
+   HIỆU ỨNG CHUYỂN ĐỘNG DÙNG CHUNG
+   Khai báo animation cho fade, slide, pulse, ticker và toast
    ═══════════════════════════════════════════════════════ */
 @keyframes fadeIn {
   from { opacity: 0; }
@@ -347,7 +359,8 @@ nav [class*="nav-link"]:hover {
 .animate-toast-progress { animation: toast-progress linear forwards; }
 
 /* ═══════════════════════════════════════════════════════
-   UTILITY CLASSES
+   CÁC CLASS TIỆN ÍCH DÙNG LẠI NHIỀU NƠI
+   Gom các class nhanh cho màu, nền, chip, search bar và divider
    ═══════════════════════════════════════════════════════ */
 .text-green-dark  { color: var(--green-dark); }
 .text-green-teal  { color: var(--green-teal); }

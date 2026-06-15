@@ -31,10 +31,8 @@ export default function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
         password: '',
         confirmPassword: ''
     });
-    // Trạng thái hiển thị/ẩn mật khẩu (👁️ hoặc 🙈)
     const [showPassword, setShowPassword] = useState(false);
 
-    // Bản đồ ánh xạ các mã lỗi trả về từ Backend sang ngôn ngữ Tiếng Việt dễ hiểu cho người dùng
     const ERROR_MAP: Record<string, string> = {
         "ERR_PHONE_EXISTS": "Số điện thoại này đã được sử dụng bởi tài khoản khác.",
         "ERR_INVALID_FORMAT": "Dữ liệu nhập vào không hợp lệ. SĐT cần đúng chuẩn và mật khẩu (nếu đổi) cần ít nhất 6 ký tự.",
