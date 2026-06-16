@@ -1,25 +1,28 @@
 package com.myproject.clinic.dashboard.service;
 
-import com.myproject.clinic.dashboard.dto.DashboardStatsResponse;
-import com.myproject.clinic.entity.Appointment;
-import com.myproject.clinic.entity.User;
-
-import com.myproject.clinic.repository.AppointmentRepository;
-import com.myproject.clinic.repository.OnlineConsultationRepository;
-import com.myproject.clinic.repository.PrescriptionRepository;
-import com.myproject.clinic.repository.UserRepository;
-import com.myproject.clinic.repository.HealthPackageBookingRepository;
-import com.myproject.clinic.repository.RoomBookingRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import jakarta.annotation.PostConstruct;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Service;
+
+import com.myproject.clinic.dashboard.dto.DashboardStatsResponse;
+import com.myproject.clinic.entity.Appointment;
+import com.myproject.clinic.repository.AppointmentRepository;
+import com.myproject.clinic.repository.HealthPackageBookingRepository;
+import com.myproject.clinic.repository.OnlineConsultationRepository;
+import com.myproject.clinic.repository.PrescriptionRepository;
+import com.myproject.clinic.repository.RoomBookingRepository;
+import com.myproject.clinic.repository.UserRepository;
+
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -47,7 +50,6 @@ public class DashboardService {
                 // Hiện tại là [T-30 đến Nay], Trước đó là [T-60 đến T-30]
                 LocalDateTime currentStart = now.minusDays(30).with(LocalTime.MIN);
                 LocalDateTime prevStart = currentStart.minusDays(30);
-                LocalDateTime prevEnd = currentStart.minusNanos(1);
                 int daysToDisplay = 30;
 
                 // BƯỚC 1: Tính toán 4 chỉ số thống kê tổng quan (30 ngày gần nhất)
@@ -184,16 +186,6 @@ public class DashboardService {
                                 .directChartData(directChartData)
                                 .todayAppointments(todayAppointments)
                                 .build();
-        }
-
-        /**
-         * HÀM PHỤ: Tính tỷ lệ tăng trưởng phần trăm.
-         * CÔNG THỨC: ((Hiện tại - Trước đó) / Trước đó) * 100
-         */
-        private double calculateGrowth(long current, long previous) {
-                if (previous == 0)
-                        return current > 0 ? 100.0 : 0.0;
-                return ((double) (current - previous) / previous) * 100.0;
         }
 
         /**

@@ -23,9 +23,6 @@ public class AppointmentService {
     private final AppointmentRepository appointmentRepository;
     private final UserRepository userRepository;
     private final DoctorRepository doctorRepository;
-    private final ClinicServiceRepository clinicServiceRepository;
-    private final DoctorScheduleRepository scheduleRepository;
-    private final HealthPackageRepository healthPackageRepository;
     private final EmailService emailService;
     private final BookingValidationService bookingValidationService;
     private final SecurityUtils securityUtils;

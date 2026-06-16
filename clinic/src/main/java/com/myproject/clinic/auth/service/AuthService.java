@@ -1,15 +1,12 @@
 package com.myproject.clinic.auth.service;
 
-import com.myproject.clinic.auth.dto.*;
-import com.myproject.clinic.config.JwtConfig;
-import com.myproject.clinic.entity.PasswordResetToken;
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-import com.myproject.clinic.entity.User;
-import com.myproject.clinic.repository.PasswordResetTokenRepository;
-
-import com.myproject.clinic.repository.UserRepository;
-import com.myproject.clinic.utils.EmailService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,12 +16,19 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.security.SecureRandom;
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import com.myproject.clinic.auth.dto.AuthResponse;
+import com.myproject.clinic.auth.dto.ForgotPasswordRequest;
+import com.myproject.clinic.auth.dto.LoginRequest;
+import com.myproject.clinic.auth.dto.RegisterRequest;
+import com.myproject.clinic.auth.dto.ResetPasswordRequest;
+import com.myproject.clinic.config.JwtConfig;
+import com.myproject.clinic.entity.PasswordResetToken;
+import com.myproject.clinic.entity.User;
+import com.myproject.clinic.repository.PasswordResetTokenRepository;
+import com.myproject.clinic.repository.UserRepository;
+import com.myproject.clinic.utils.EmailService;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -152,7 +156,7 @@ public class AuthService {
 
                 List<PasswordResetToken> activeTokens = tokenRepository.findAll().stream()
                                 .filter(t -> t.getUsedAt() == null && t.getExpiresAt().isAfter(LocalDateTime.now()))
-                                .toList();
+                                .collect(Collectors.toList());
 
                 PasswordResetToken validToken = null;
                 for (PasswordResetToken t : activeTokens) {

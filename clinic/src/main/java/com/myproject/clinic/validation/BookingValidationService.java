@@ -1,15 +1,20 @@
 package com.myproject.clinic.validation;
 
-import com.myproject.clinic.repository.*;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import com.myproject.clinic.repository.AppointmentRepository;
+import com.myproject.clinic.repository.HealthPackageBookingRepository;
+import com.myproject.clinic.repository.OnlineConsultationRepository;
+import com.myproject.clinic.repository.RoomBookingRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +25,6 @@ public class BookingValidationService {
     private final HealthPackageBookingRepository healthPackageRepository;
     private final RoomBookingRepository roomBookingRepository;
     private final List<String> IGNORED_STATUSES = List.of("CANCELLED", "REJECTED", "COMPLETED");
-    private final List<String> ACTIVE_STATUSES = List.of("PENDING", "PAID");
 
     /**
      * LOGIC 1: Kiểm tra sự sẵn sàng của Bệnh nhân trên TẤT CẢ các dịch vụ.
