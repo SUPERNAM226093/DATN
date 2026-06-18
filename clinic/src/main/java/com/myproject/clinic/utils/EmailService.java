@@ -152,21 +152,6 @@ public class EmailService {
     @Async
     @Transactional
     public void sendForgotPasswordEmail(String to, String fullName, String tempCode) {
-        log.info("=================================================");
-        log.info("FORGOT PASSWORD CODE FOR {}: {}", to, tempCode);
-        log.info("=================================================");
-        
-        // Ghi mã ra file cục bộ để nhà phát triển dễ lấy trong môi trường dev
-        try {
-            java.nio.file.Files.writeString(
-                java.nio.file.Path.of("forgot-password-code.txt"),
-                "Mã khôi phục mật khẩu của " + fullName + " (" + to + ") là: " + tempCode + "\n"
-            );
-            log.info("Recovery code written to local file: forgot-password-code.txt");
-        } catch (Exception e) {
-            log.warn("Failed to write recovery code to local file: {}", e.getMessage());
-        }
-        
         String subject = "Mã xác nhận khôi phục mật khẩu - Clinic System";
 
         String htmlContent = String.format(

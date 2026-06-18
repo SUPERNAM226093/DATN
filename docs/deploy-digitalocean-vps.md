@@ -58,8 +58,8 @@ Cài Git, Docker và Docker Compose plugin:
 ```bash
 apt install -y git curl ca-certificates
 curl -fsSL https://get.docker.com -o get-docker.sh
-sh get-docker.sh
-apt install -y docker-compose-plugin
+  sh get-docker.sh
+  apt install -y docker-compose-plugin
 ```
 
 Kiểm tra lại:
