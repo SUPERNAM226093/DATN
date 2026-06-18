@@ -11,41 +11,14 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ExtractionResult {
 
-    /**
-     * Tên chuyên khoa người dùng nhắc đến (sau khi đã qua
-     * AliasNormalizationService).
-     * null = người dùng không đề cập cụ thể -> tìm tất cả chuyên khoa.
-     */
     private String specialization;
 
-    /**
-     * ID chuyên khoa sau khi resolve từ tên. null nếu không tìm thấy.
-     */
+ 
     private Long specializationId;
-
-    /**
-     * Tên bác sĩ người dùng hỏi đích danh (vd: "bác sĩ Tuấn").
-     * null nếu người dùng không đề cập tên cụ thể.
-     */
     private String doctorName;
-
-    /**
-     * Ngày truy vấn đã được quy đổi sang định dạng ISO (yyyy-MM-dd).
-     * Mặc định là ngày hôm nay nếu người dùng không nói rõ.
-     */
     private String date;
-
-    /**
-     * Loại hình khám: "ONLINE", "OFFLINE", hoặc "ALL".
-     * Mặc định là "ALL".
-     */
     @Builder.Default
     private String type = "ALL";
-
-    /**
-     * Khung giờ: "MORNING" (sáng <12h), "AFTERNOON" (chiều >=12h), "ALL".
-     * Mặc định là "ALL".
-     */
     @Builder.Default
     private String timeRange = "ALL";
 

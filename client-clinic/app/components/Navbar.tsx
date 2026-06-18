@@ -85,39 +85,17 @@ export default function Navbar() {
     const pathname = usePathname();
     const isHomepage = pathname === "/";
 
-    // --- 1. KHỞI TẠO HOOKS VÀ CÁC TRẠNG THÁI (STATE) CỦA COMPONENT ---
-
-    // Sử dụng context Toast để hiển thị các thông báo nổi ở góc màn hình (Thành công, Lỗi, Thông tin...)
     const { showToast } = useToast();
 
-    // State dùng để theo dõi xem người dùng đã cuộn trang xuống chưa (scrollY > 50px) để thay đổi CSS (thêm shadow, đổi opacity)
     const [isScrolled, setIsScrolled] = useState(false);
-
-    // Quản lý việc đóng/mở menu rút gọn khi hiển thị trên các thiết bị di động (Mobile Menu)
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-    // Trạng thái hiển thị (ẩn/hiện) của Modal chứa luồng xác thực Đăng nhập / Đăng ký / Quên mật khẩu
     const [showAuthModal, setShowAuthModal] = useState(false);
-
-    // Phân loại giao diện đang hiển thị trong Modal xác thực: "login" (Đăng nhập), "register" (Đăng ký) hoặc "forgot" (Quên mật khẩu)
     const [authTab, setAuthTab] = useState<AuthTab>("login");
-
-    // Lưu trữ thông tin định danh của người dùng hiện tại (Họ tên, email, vai trò, token) sau khi đăng nhập thành công
     const [user, setUser] = useState<AuthResponse | null>(null);
-
-    // Quản lý việc ẩn/hiện danh sách menu con khi người dùng nhấp vào ảnh đại diện (avatar) của mình
     const [showUserMenu, setShowUserMenu] = useState(false);
-
-    // Xác định menu dropdown nào trên thanh điều hướng đang được rê chuột (hover) vào (Facilities, Services, Guide, Contact...)
     const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-
-    // Lấy các thuộc tính và hàm từ Custom Hook PWA dùng cho việc cài đặt ứng dụng web thành ứng dụng di động/máy tính độc lập
     const { isInstallable, isStandalone, isIOS, installApp } = usePWA();
-
-    // Biến trạng thái lưu thông tin nhập liệu cho Form Đăng nhập (Email và Mật khẩu)
     const [loginForm, setLoginForm] = useState<LoginRequest>({ email: "", password: "" });
-
-    // Biến trạng thái lưu thông tin nhập liệu cho Form Đăng ký tài khoản mới của bệnh nhân
     const [registerForm, setRegisterForm] = useState<RegisterRequest>({
         email: "",
         password: "",
@@ -127,30 +105,20 @@ export default function Navbar() {
         dateOfBirth: "",
         address: "",
     });
-
-    // Trạng thái hiển thị hoạt ảnh tải dữ liệu (loading spinner) khi đang gọi các API xác thực lên máy chủ backend
     const [authLoading, setAuthLoading] = useState(false);
     const [authError, setAuthError] = useState<string | null>(null);
     const [authSuccess, setAuthSuccess] = useState<string | null>(null);
-
-    // Lưu email của người dùng khi họ cần khôi phục mật khẩu trong luồng Quên mật khẩu
     const [forgotEmail, setForgotEmail] = useState("");
-
-    // Mã Token xác thực (OTP) do hệ thống gửi về Email của bệnh nhân để xác thực danh tính
     const [resetToken, setResetToken] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
 
-    // Quản lý các bước trong luồng khôi phục mật khẩu: Bước 1 (Nhập Email gửi OTP), Bước 2 (Nhập OTP & Mật khẩu mới)
     const [forgotStep, setForgotStep] = useState(1);
 
-    // Bộ đếm ngược thời gian (đơn vị: giây) để giới hạn tần suất nhấn nút "Gửi lại mã OTP" nhằm chống spam mail
     const [resendCountdown, setResendCountdown] = useState(0);
 
-    // Các tham chiếu Ref trỏ trực tiếp đến phần tử DOM giúp nhận diện sự kiện click ra ngoài vùng hiển thị để đóng popup tự động
-    const modalRef = useRef<HTMLDivElement>(null); // Tham chiếu đến hộp thoại Modal
-    const userMenuRef = useRef<HTMLDivElement>(null); // Tham chiếu đến Menu thả xuống của Avatar người dùng
-
+    const modalRef = useRef<HTMLDivElement>(null);
+    const userMenuRef = useRef<HTMLDivElement>(null);
     /**
      * EFFECT: loadUser
      * Nhiệm vụ: Tự động kiểm tra trạng thái đăng nhập của bệnh nhân mỗi khi trang được tải lại (F5).

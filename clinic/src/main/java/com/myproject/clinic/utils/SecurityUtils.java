@@ -65,8 +65,6 @@ public class SecurityUtils {
     /**
      * Kiểm tra user hiện tại có quyền truy cập toàn cục (global data access) hay
      * không.
-     * Áp dụng cho ADMIN, STAFF và tất cả các CUSTOM ROLES (Dược sĩ, Kế toán...).
-     * DOCTOR bị giới hạn dữ liệu cá nhân. PATIENT/USER không có quyền quản trị.
      */
     public boolean hasGlobalDataAccess() {
         String roleName = getCurrentUser().getRoleName();

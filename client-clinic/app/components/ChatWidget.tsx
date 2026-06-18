@@ -218,25 +218,43 @@ export default function ChatWidget() {
 
     return (
         <>
-            {/* Floating Chat Button */}
-            <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110"
-                style={{
-                    background: "linear-gradient(135deg, #0d6b52 0%, #0ea882 100%)",
-                }}
-                id="chat-toggle-btn"
-            >
-                {isOpen ? (
-                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3">
+                <a
+                    href="https://zalo.me/0395208934"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Liên hệ Zalo nhân viên tư vấn"
+                    title="Liên hệ Zalo nhân viên tư vấn"
+                    className="w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 bg-white border border-[#c7e7ff]"
+                >
+                    <svg className="w-9 h-9" viewBox="0 0 64 64" aria-hidden="true">
+                        <circle cx="32" cy="32" r="32" fill="#0068FF" />
+                        <path fill="#FFFFFF" d="M17.4 20.3h29.2c1.8 0 3.2 1.4 3.2 3.2v17.1c0 1.8-1.4 3.2-3.2 3.2H31.3l-6.7 5.5c-1 .8-2.4.1-2.4-1.2v-4.3h-4.8c-1.8 0-3.2-1.4-3.2-3.2V23.5c0-1.8 1.4-3.2 3.2-3.2Z" />
+                        <path fill="#0068FF" d="M24.2 28.2h14.2c.9 0 1.4 1 .8 1.7l-9.2 10.2h8.6c.7 0 1.3.6 1.3 1.3s-.6 1.3-1.3 1.3H24c-.9 0-1.4-1-.8-1.7l9.2-10.2h-8.2c-.7 0-1.3-.6-1.3-1.3s.6-1.3 1.3-1.3Zm17.4 0h2c.7 0 1.3.6 1.3 1.3v11.9c0 .7-.6 1.3-1.3 1.3h-2c-.7 0-1.3-.6-1.3-1.3V29.5c0-.7.6-1.3 1.3-1.3Z" />
                     </svg>
-                ) : (
-                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                    </svg>
-                )}
-            </button>
+                </a>
+
+                <button
+                    onClick={() => setIsOpen(!isOpen)}
+                    className="w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110"
+                    style={{
+                        background: "linear-gradient(135deg, #0d6b52 0%, #0ea882 100%)",
+                    }}
+                    id="chat-toggle-btn"
+                    aria-label={isOpen ? "Đóng chatbot" : "Mở chatbot"}
+                    title={isOpen ? "Đóng chatbot" : "Mở chatbot"}
+                >
+                    {isOpen ? (
+                        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    ) : (
+                        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                        </svg>
+                    )}
+                </button>
+            </div>
 
             {/* CỬA SỔ CHAT (Chat Panel) */}
             {isOpen && (

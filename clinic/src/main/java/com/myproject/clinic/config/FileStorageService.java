@@ -10,23 +10,14 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
-/**
- * Dịch vụ lưu trữ tệp tin (FileStorageService).
- * Hỗ trợ lưu trữ các tệp tải lên (như ảnh đại diện bác sĩ, ảnh phòng bệnh, ảnh gói khám) và xóa tệp cũ khỏi máy chủ.
- */
 @Service
 public class FileStorageService {
-
-    // Thư mục gốc để lưu trữ tệp tin (trỏ đến thư mục absolute của thư mục "public" ở thư mục dự án)
     private final Path rootLocation = Paths.get("public").toAbsolutePath();
 
     /**
      * Hàm lưu trữ tệp tin tải lên.
-     * Tự động sinh tên tệp bằng UUID ngẫu nhiên để tránh trùng lặp tên tệp, tạo thư mục con nếu chưa có.
-     * 
-     * @param file Đối tượng tệp tin tải lên (MultipartFile)
-     * @param subDirectory Tên thư mục con tương ứng (Ví dụ: "doctors", "rooms")
-     * @return Đường dẫn tương đối của tệp tin đã lưu (Ví dụ: "doctors/uuid-filename.jpg")
+     * Tự động sinh tên tệp bằng UUID ngẫu nhiên để tránh trùng lặp tên tệp, tạo thư
+     * mục con nếu chưa có.
      */
     public String store(MultipartFile file, String subDirectory) {
         System.out.println(">>> Attempting to store file. Root location: " + rootLocation);
@@ -43,12 +34,13 @@ public class FileStorageService {
                 extension = originalFilename.substring(originalFilename.lastIndexOf("."));
             }
 
-            // Tạo tên tệp tin duy nhất bằng cách ghép chuỗi UUID ngẫu nhiên với đuôi mở rộng
+            // Tạo tên tệp tin duy nhất bằng cách ghép chuỗi UUID ngẫu nhiên với đuôi mở
+            // rộng
             String storedFilename = UUID.randomUUID() + extension;
             Path destinationDir = rootLocation.resolve(subDirectory);
-            
+
             System.out.println(">>> Target directory: " + destinationDir);
-            
+
             // Nếu thư mục con chưa tồn tại thì tiến hành tạo mới
             if (!Files.exists(destinationDir)) {
                 Files.createDirectories(destinationDir);
@@ -58,8 +50,9 @@ public class FileStorageService {
             // Xác định đường dẫn đầy đủ của tệp tin đích
             Path destinationFile = destinationDir.resolve(storedFilename);
             System.out.println(">>> Target file path: " + destinationFile);
-            
-            // Sao chép luồng dữ liệu từ tệp tải lên vào tệp tin đích, ghi đè nếu tệp đích đã tồn tại
+
+            // Sao chép luồng dữ liệu từ tệp tải lên vào tệp tin đích, ghi đè nếu tệp đích
+            // đã tồn tại
             Files.copy(file.getInputStream(), destinationFile, StandardCopyOption.REPLACE_EXISTING);
             System.out.println(">>> File copied successfully!");
 
@@ -85,7 +78,7 @@ public class FileStorageService {
                     relativePath = relativePath.substring(8);
                 }
                 Path file = rootLocation.resolve(relativePath);
-                
+
                 // Thực hiện xóa tệp nếu tệp đó có tồn tại trên máy chủ
                 Files.deleteIfExists(file);
             }
@@ -94,7 +87,7 @@ public class FileStorageService {
             e.printStackTrace();
             throw new RuntimeException("Failed to delete file: " + e.getMessage(), e);
         } catch (Exception e) {
-             System.err.println(">>> Unexpected ERROR during file deletion: " + e.getMessage());
+            System.err.println(">>> Unexpected ERROR during file deletion: " + e.getMessage());
         }
     }
 }

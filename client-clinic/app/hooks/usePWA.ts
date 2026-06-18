@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 
 /**
- * Giao diện đại diện cho sự kiện 'beforeinstallprompt' của trình duyệt.
  * Sự kiện này được kích hoạt khi trình duyệt xác định trang web đáp ứng đủ các tiêu chuẩn PWA
  * và có thể cài đặt được trên thiết bị của người dùng (chỉ áp dụng với các trình duyệt nhân Chromium).
  */
@@ -17,18 +16,16 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 export const usePWA = () => {
-  // Lưu trữ sự kiện cài đặt để kích hoạt thủ công khi người dùng click vào nút cài đặt
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
-  
-  // Trạng thái xác định xem ứng dụng có thể cài đặt được trên thiết bị hiện tại hay không
+
   const [isInstallable, setIsInstallable] = useState(false);
-  
+
   // Trạng thái xác định xem ứng dụng đang chạy ở chế độ App độc lập (Standalone) hay chạy trên trình duyệt thường
   const [isStandalone, setIsStandalone] = useState(false);
-  
+
   // Trạng thái xác định xem thiết bị của người dùng có phải là hệ điều hành iOS (iPhone, iPad) hay không
   const [isIOS, setIsIOS] = useState(false);
-  
+
   // Trạng thái xác định xem người dùng có đang mở trang web trong trình duyệt nội bộ (In-App Browser của Facebook, Zalo, Tiktok,...) hay không
   const [isInAppBrowser, setIsInAppBrowser] = useState(false);
 
@@ -38,9 +35,9 @@ export const usePWA = () => {
      * Mô tả: Kiểm tra xem ứng dụng đang chạy ở chế độ Standalone (đã cài đặt làm App) hay không.
      */
     const checkStandalone = () => {
-      const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || 
-                               (window.navigator as any).standalone || 
-                               document.referrer.includes('android-app://');
+      const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches ||
+        (window.navigator as any).standalone ||
+        document.referrer.includes('android-app://');
       setIsStandalone(isStandaloneMode);
     };
 
@@ -50,7 +47,7 @@ export const usePWA = () => {
      */
     const checkPlatform = () => {
       const ua = window.navigator.userAgent;
-      
+
       // Kiểm tra hệ điều hành iOS
       const ios = /iPad|iPhone|iPod/.test(ua) && !(window as any).MSStream;
       setIsIOS(ios);
@@ -91,10 +88,10 @@ export const usePWA = () => {
 
     // Hiển thị hộp thoại cài đặt của trình duyệt
     deferredPrompt.prompt();
-    
+
     // Đợi người dùng đưa ra lựa chọn (Đồng ý cài đặt hoặc Từ chối)
     const { outcome } = await deferredPrompt.userChoice;
-    
+
     // Nếu người dùng đồng ý cài đặt ứng dụng
     if (outcome === 'accepted') {
       setDeferredPrompt(null); // Giải phóng sự kiện đã lưu

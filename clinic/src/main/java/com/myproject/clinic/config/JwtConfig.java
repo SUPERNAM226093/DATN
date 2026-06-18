@@ -14,14 +14,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-/**
- * Lớp cấu hình và xử lý JWT (JwtConfig).
- * Chứa các thuật toán và hàm tiện ích phục vụ tạo (generate), giải mã (parse), trích xuất claims và kiểm tra tính hợp lệ của Token JWT.
- */
 @Component
 public class JwtConfig {
 
-    // Lấy giá trị khóa bí mật (secret key) cấu hình trong tệp application.properties hoặc .env
+    // Lấy giá trị khóa bí mật (secret key) cấu hình trong tệp
+    // application.properties hoặc .env
     @Value("${jwt.secret}")
     private String secretKey;
 
@@ -29,23 +26,10 @@ public class JwtConfig {
     @Value("${jwt.expiration}")
     private long expiration;
 
-    /**
-     * Tạo token JWT không có thông tin bổ sung (extra claims).
-     * 
-     * @param userDetails Thông tin tài khoản người dùng
-     * @return Chuỗi token JWT hoàn chỉnh
-     */
     public String generateToken(UserDetails userDetails) {
         return generateToken(new HashMap<>(), userDetails);
     }
 
-    /**
-     * Tạo token JWT kèm theo các thông tin mở rộng (extra claims - như vai trò, id...).
-     * 
-     * @param extraClaims Các thông tin tùy biến đính kèm vào payload của token
-     * @param userDetails Thông tin tài khoản người dùng
-     * @return Chuỗi token JWT hoàn chỉnh
-     */
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         return Jwts.builder()
                 .claims(extraClaims) // Thiết lập các thông tin đính kèm bổ sung
@@ -63,15 +47,13 @@ public class JwtConfig {
         return extractClaim(token, Claims::getSubject);
     }
 
-    /**
-     * Trích xuất vai trò (Role) của người dùng từ Token JWT.
-     */
     public String extractRole(String token) {
         return extractClaim(token, claims -> claims.get("role", String.class));
     }
 
     /**
-     * Kiểm tra token JWT có hợp lệ không (So sánh trùng tên người dùng và token chưa hết hạn).
+     * Kiểm tra token JWT có hợp lệ không (So sánh trùng tên người dùng và token
+     * chưa hết hạn).
      */
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
@@ -86,7 +68,8 @@ public class JwtConfig {
     }
 
     /**
-     * Hàm dùng chung để trích xuất một trường thông tin cụ thể (Claim) từ Token JWT bằng cách sử dụng Functional Interface.
+     * Hàm dùng chung để trích xuất một trường thông tin cụ thể (Claim) từ Token JWT
+     * bằng cách sử dụng Functional Interface.
      */
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
@@ -94,7 +77,8 @@ public class JwtConfig {
     }
 
     /**
-     * Giải mã và lấy toàn bộ các trường thông tin (Claims) từ Token JWT sau khi đã xác thực chữ ký số thành công.
+     * Giải mã và lấy toàn bộ các trường thông tin (Claims) từ Token JWT sau khi đã
+     * xác thực chữ ký số thành công.
      */
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
@@ -105,7 +89,8 @@ public class JwtConfig {
     }
 
     /**
-     * Chuyển đổi chuỗi bí mật (Secret Key) dạng thô sang khóa bảo mật SecretKey an toàn cho thuật toán HMAC-SHA.
+     * Chuyển đổi chuỗi bí mật (Secret Key) dạng thô sang khóa bảo mật SecretKey an
+     * toàn cho thuật toán HMAC-SHA.
      */
     private SecretKey getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(
