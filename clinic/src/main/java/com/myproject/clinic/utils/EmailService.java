@@ -149,8 +149,7 @@ public class EmailService {
         sendHtmlEmail(to, subject, htmlContent);
     }
 
-    @Async
-    @Transactional
+    // KHÔNG @Async để exception SMTP được bubble lên caller (AuthService)
     public void sendForgotPasswordEmail(String to, String fullName, String tempCode) {
         String subject = "Mã xác nhận khôi phục mật khẩu - Clinic System";
 
@@ -173,10 +172,21 @@ public class EmailService {
                 fullName,
                 tempCode);
         log.info("Sending email to: " + to);
-        sendHtmlEmail(to, subject, htmlContent);
+        boolean sent = sendHtmlEmail(to, subject, htmlContent);
+        if (!sent) {
+            throw new IllegalStateException("Không gửi được email khôi phục mật khẩu. Vui lòng kiểm tra SMTP_EMAIL và APP_PASSWORD.");
+        }
     }
 
-    private void sendHtmlEmail(String to, String subject, String htmlContent) {
+    private boolean sendHtmlEmail(String to, String subject, String htmlContent) {
+        if (fromEmail == null || fromEmail.isBlank()) {
+            log.error("[EMAIL] SMTP_EMAIL chưa được cấu hình. Kiểm tra biến SMTP_EMAIL trong .env");
+            return false;
+        }
+
+        log.info("[EMAIL] Chuẩn bị gửi email từ {} đến {}", fromEmail, to);
+        log.info("[EMAIL] SMTP host: smtp.gmail.com:587, auth=true, starttls=true");
+
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
@@ -185,11 +195,11 @@ public class EmailService {
             helper.setSubject(subject);
             helper.setText(htmlContent, true);
             javaMailSender.send(message);
-            log.info("Email sent successfully to {}", to);
+            log.info("[EMAIL] Gửi thành công đến {}", to);
+            return true;
         } catch (Exception e) {
-            log.error("CRITICAL: Failed to send email to {}. Error: {}", to, e.getMessage());
-            // Log code anyway for developer visibility if mail fails
-            log.info("Check console logs above for the recovery code if this is a development environment.");
+            log.error("[EMAIL] THẤT BẠI khi gửi đến {}. Lỗi: {}", to, e.getMessage(), e);
+            return false;
         }
     }
 }

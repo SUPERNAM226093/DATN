@@ -5,22 +5,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.Mac;
-package com.myproject.clinic.utils;
-
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
-import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-/**
- * Service xử lý thanh toán VNPay.
- */
 @Slf4j
 @Service
 public class VnPayService {
@@ -182,19 +172,21 @@ public class VnPayService {
      * Tạo chữ ký HMAC-SHA512.
      */
     private String hmacSHA512(final String key, final String data) {
-
-            // Chuyển mảng byte kết quả sang chuỗi hex.
-            // Chuỗi này chính là vnp_SecureHash.
+        try {
+            if (key == null || data == null) {
+                throw new NullPointerException();
+            }
+            Mac hmac512 = Mac.getInstance("HmacSHA512");
+            SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "HmacSHA512");
+            hmac512.init(secretKey);
+            byte[] result = hmac512.doFinal(data.getBytes(StandardCharsets.UTF_8));
+            
             StringBuilder sb = new StringBuilder(2 * result.length);
             for (byte b : result) {
                 sb.append(String.format("%02x", b & 0xff));
             }
-
-            // Trả về chữ ký hash.
             return sb.toString();
-
         } catch (Exception ex) {
-            // Nếu lỗi khi tính HMAC thì ghi log và trả chuỗi rỗng.
             log.error("Error calculating HMAC SHA512", ex);
             return "";
         }
