@@ -115,7 +115,7 @@ Nếu sau này bạn muốn backend dùng đúng domain/public IP cho frontend, 
 
 > Lưu ý: hiện tại compose đang hard-code:
 >
-> - `NEXT_PUBLIC_API_URL=https://sandy-marker-trance-column.trycloudflare.com/`
+> - `NEXT_PUBLIC_API_URL=https://sandy-marker-trance-column.trycloudflare.com`
 >
 > Nghĩa là nếu người dùng mở frontend từ máy khác thì gọi API sẽ lỗi, vì `localhost` sẽ trỏ về máy của người dùng chứ không phải VPS.
 >
@@ -223,7 +223,7 @@ Tìm đoạn:
 client:
   environment:
     - INTERNAL_API_URL=http://backend:8080
-    - NEXT_PUBLIC_API_URL=https://sandy-marker-trance-column.trycloudflare.com/
+    - NEXT_PUBLIC_API_URL=https://sandy-marker-trance-column.trycloudflare.com
 ```
 
 Đổi thành:
@@ -410,7 +410,7 @@ docker ps
 
 ### Lỗi frontend gọi API không được
 
-Nguyên nhân rất hay gặp là `NEXT_PUBLIC_API_URL` vẫn để `https://sandy-marker-trance-column.trycloudflare.com/` trong compose.
+Nguyên nhân rất hay gặp là `NEXT_PUBLIC_API_URL` vẫn để `https://sandy-marker-trance-column.trycloudflare.com` trong compose.
 
 Cách sửa:
 

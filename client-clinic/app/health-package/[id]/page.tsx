@@ -204,7 +204,7 @@ export default function HealthPackageDetailPage() {
                         <div className="h-72 bg-gradient-to-br from-[#F3F0FF] to-[#f9f8ff] flex items-center justify-center relative overflow-hidden">
                             {pkg.featureImageUrl ? (
                                 <img
-                                    src={`https://sandy-marker-trance-column.trycloudflare.com/${pkg.featureImageUrl}`}
+                                    src={`https://sandy-marker-trance-column.trycloudflare.com${pkg.featureImageUrl}`}
                                     alt={pkg.name}
                                     className="w-full h-full object-cover"
                                 />
