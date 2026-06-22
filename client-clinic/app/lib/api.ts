@@ -1,7 +1,7 @@
 const isServer = typeof window === 'undefined';
 const API_BASE_URL = isServer
-    ? (process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || "https://sandy-marker-trance-column.trycloudflare.com")
-    : (process.env.NEXT_PUBLIC_API_URL || "https://sandy-marker-trance-column.trycloudflare.com");
+    ? (process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || "https://outline-puzzle-york-maple.trycloudflare.com")
+    : (process.env.NEXT_PUBLIC_API_URL || "https://outline-puzzle-york-maple.trycloudflare.com");
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 

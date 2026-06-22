@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
             {
                 // Ảnh upload từ backend Spring Boot (avatar bác sĩ, ảnh phòng...)
                 protocol: "https",
-                hostname: "sandy-marker-trance-column.trycloudflare.com",
+                hostname: "outline-puzzle-york-maple.trycloudflare.com",
                 pathname: "/api/files/**",
             },
         ],
