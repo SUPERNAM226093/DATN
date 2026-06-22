@@ -59,7 +59,7 @@ export default function SpecializationListPage() {
                                 >
                                     <div className="w-14 h-14 rounded-2xl bg-[#E6EFFF] flex items-center justify-center mx-auto mb-3 group-hover:bg-[#0065FF] transition-colors">
                                         {spec.featureImageUrl ? (
-                                            <img src={`http://localhost:8081${spec.featureImageUrl}`} alt={spec.name} className="w-8 h-8 object-contain group-hover:brightness-[100] group-hover:invert" />
+                                            <img src={`http://139.59.109.214:8081${spec.featureImageUrl}`} alt={spec.name} className="w-8 h-8 object-contain group-hover:brightness-[100] group-hover:invert" />
                                         ) : (
                                             <svg className="w-7 h-7 text-[#0065FF] group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 20 20">
                                                 <path fillRule="evenodd" d="M7 2a1 1 0 00-.707 1.707L7 4.414v3.758a1 1 0 01-.293.707l-4 4C.817 14.769 2.156 18 4.828 18h10.343c2.673 0 4.012-3.231 2.122-5.121l-4-4A1 1 0 0113 8.172V4.414l.707-.707A1 1 0 0013 2H7zm2 6.172V4h2v4.172a3 3 0 00.879 2.12l1.027 1.028a4 4 0 00-2.171.102l-.47.156a4 4 0 01-2.53 0l-.563-.187 1.116-1.116A3 3 0 009 8.172z" clipRule="evenodd" />

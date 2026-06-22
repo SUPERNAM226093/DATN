@@ -15,7 +15,7 @@ interface Props {
 }
 
 export default function RoomDetailModal({ room, onClose, onBook }: Props) {
-    
+
 
     /**
      * HÀM 1: formatPrice
@@ -34,7 +34,7 @@ export default function RoomDetailModal({ room, onClose, onBook }: Props) {
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
             <div className="bg-white rounded-[2rem] w-full max-w-lg overflow-hidden shadow-2xl relative">
                 {/* NÚT ĐÓNG (Close Button) */}
-                <button 
+                <button
                     onClick={onClose}
                     className="absolute top-4 right-4 z-10 bg-black/20 hover:bg-black/40 text-white p-2 rounded-full transition-all"
                 >
@@ -44,10 +44,10 @@ export default function RoomDetailModal({ room, onClose, onBook }: Props) {
                 {/* HÌNH ẢNH MINH HỌA PHÒNG */}
                 <div className="relative h-64">
                     {room.images && room.images.length > 0 ? (
-                        <img 
-                            src={`http://localhost:8081/${room.images[0]}`} 
-                            alt={room.name} 
-                            className="w-full h-full object-cover" 
+                        <img
+                            src={`http://139.59.109.214:8081/${room.images[0]}`}
+                            alt={room.name}
+                            className="w-full h-full object-cover"
                         />
                     ) : (
                         <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
@@ -98,7 +98,7 @@ export default function RoomDetailModal({ room, onClose, onBook }: Props) {
                     </div>
 
                     {/* NÚT BẤM ĐẶT PHÒNG */}
-                    <button 
+                    <button
                         onClick={onBook}
                         disabled={!room.isAvailable}
                         className="w-full bg-[#0052CC] hover:bg-[#e05611] text-white font-black py-4 rounded-2xl shadow-xl shadow-[#0052CC]/20 transition-all disabled:opacity-50 disabled:grayscale"

@@ -16,7 +16,7 @@ const AVATAR_COLORS = [
 
 export default function DoctorConsultation() {
     // --- 1. KHỞI TẠO CÁC HOOK VÀ BIẾN TRẠNG THÁI (STATE) ---
-    
+
     const scrollRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
     const [doctors, setDoctors] = useState<DoctorResponse[]>([]);
@@ -67,8 +67,8 @@ export default function DoctorConsultation() {
     // LOADING STATE
     if (loading) {
         return (
-        /* TRẠNG THÁI ĐANG TẢI: Hiển thị khung giả lập card bác sĩ để người dùng biết dữ liệu đang được lấy từ backend. */
-        <section className="py-14 bg-transparent">
+            /* TRẠNG THÁI ĐANG TẢI: Hiển thị khung giả lập card bác sĩ để người dùng biết dữ liệu đang được lấy từ backend. */
+            <section className="py-14 bg-transparent">
                 <div className="max-w-6xl mx-auto px-4">
                     {/* TIÊU ĐỀ KHU VỰC: Giữ giống layout thật để khi hết loading giao diện không bị nhảy mạnh. */}
                     <div className="text-center mb-12">
@@ -104,8 +104,8 @@ export default function DoctorConsultation() {
     // ERROR STATE
     if (error) {
         return (
-        /* TRẠNG THÁI LỖI: Khi API danh sách bác sĩ lỗi, hiển thị thông báo và nút tải lại trang. */
-        <section className="py-14 bg-transparent">
+            /* TRẠNG THÁI LỖI: Khi API danh sách bác sĩ lỗi, hiển thị thông báo và nút tải lại trang. */
+            <section className="py-14 bg-transparent">
                 <div className="max-w-6xl mx-auto px-4 text-center">
                     {/* TIÊU ĐỀ KHU VỰC: Vẫn hiển thị tiêu đề để người dùng biết lỗi thuộc phần đặt lịch bác sĩ. */}
                     <div className="text-center mb-12">
@@ -135,8 +135,8 @@ export default function DoctorConsultation() {
     // EMPTY STATE
     if (doctors.length === 0) {
         return (
-        /* TRẠNG THÁI RỖNG: API chạy thành công nhưng chưa có bác sĩ nào để hiển thị. */
-        <section className="py-14 bg-transparent">
+            /* TRẠNG THÁI RỖNG: API chạy thành công nhưng chưa có bác sĩ nào để hiển thị. */
+            <section className="py-14 bg-transparent">
                 <div className="max-w-6xl mx-auto px-4 text-center">
                     {/* TIÊU ĐỀ KHU VỰC: Giữ cùng cấu trúc với trạng thái có dữ liệu. */}
                     <div className="text-center mb-12">
@@ -203,7 +203,7 @@ export default function DoctorConsultation() {
                                     <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center overflow-hidden border-4 border-white shadow-lg">
                                         {doctor.featureImageUrl ? (
                                             <img
-                                                src={`http://localhost:8081${doctor.featureImageUrl}`}
+                                                src={`http://139.59.109.214:8081${doctor.featureImageUrl}`}
                                                 alt={doctor.fullName}
                                                 className="w-full h-full rounded-full object-cover"
                                             />

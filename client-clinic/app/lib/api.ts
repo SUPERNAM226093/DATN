@@ -1,7 +1,7 @@
 const isServer = typeof window === 'undefined';
-const API_BASE_URL = isServer 
-    ? (process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:8081")
-    : (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8081");
+const API_BASE_URL = isServer
+    ? (process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://139.59.109.214:8081")
+    : (process.env.NEXT_PUBLIC_API_URL || "http://139.59.109.214:8081");
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 

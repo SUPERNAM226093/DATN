@@ -53,30 +53,28 @@ export default function DoctorListPage() {
                         <div className="flex flex-wrap gap-2">
                             <button
                                 onClick={() => setSelectedClinicId(null)}
-                                className={`px-5 py-2 rounded-full text-sm font-semibold transition-all ${
-                                    selectedClinicId === null 
-                                    ? "bg-black text-white shadow-lg" 
-                                    : "bg-gray-100 text-gray-500 hover:bg-gray-200"
-                                }`}
+                                className={`px-5 py-2 rounded-full text-sm font-semibold transition-all ${selectedClinicId === null
+                                        ? "bg-black text-white shadow-lg"
+                                        : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                                    }`}
                             >
                                 Tất cả
                             </button>
                             {HOSPITALS.map((hospital) => {
                                 // Extract the district name for the button label to match UI exactly
                                 const shortName = hospital.address.includes("Mỹ Đức") ? "Mỹ Đức" :
-                                                  hospital.address.includes("Hà Đông") ? "Hà Đông" :
-                                                  hospital.address.includes("Ba Đình") ? "Ba Đình" :
-                                                  hospital.address.includes("Cầu Giấy") ? "Cầu Giấy" : 
-                                                  hospital.name.match(/(Med \d+)/)?.[1] || hospital.name.split(" - ")[0];
+                                    hospital.address.includes("Hà Đông") ? "Hà Đông" :
+                                        hospital.address.includes("Ba Đình") ? "Ba Đình" :
+                                            hospital.address.includes("Cầu Giấy") ? "Cầu Giấy" :
+                                                hospital.name.match(/(Med \d+)/)?.[1] || hospital.name.split(" - ")[0];
                                 return (
                                     <button
                                         key={hospital.id}
                                         onClick={() => setSelectedClinicId(hospital.id)}
-                                        className={`px-5 py-2 rounded-full text-sm font-semibold transition-all ${
-                                            selectedClinicId === hospital.id 
-                                            ? "bg-black text-white shadow-lg" 
-                                            : "bg-gray-100 text-gray-500 hover:bg-gray-200"
-                                        }`}
+                                        className={`px-5 py-2 rounded-full text-sm font-semibold transition-all ${selectedClinicId === hospital.id
+                                                ? "bg-black text-white shadow-lg"
+                                                : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                                            }`}
                                     >
                                         {shortName}
                                     </button>
@@ -128,7 +126,7 @@ export default function DoctorListPage() {
                                     <div className="flex gap-4 items-center">
                                         <div className="w-16 h-16 rounded-full overflow-hidden flex-shrink-0 border-2 border-gray-100 group-hover:border-black transition-colors">
                                             {doc.featureImageUrl ? (
-                                                <img src={`http://localhost:8081${doc.featureImageUrl}`} alt={doc.fullName} className="w-full h-full object-cover" />
+                                                <img src={`http://139.59.109.214:8081${doc.featureImageUrl}`} alt={doc.fullName} className="w-full h-full object-cover" />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center text-white text-xl font-bold" style={{ backgroundColor: AVATAR_COLORS[doc.id % AVATAR_COLORS.length] }}>
                                                     {doc.fullName?.split(" ").pop()?.charAt(0) || "?"}

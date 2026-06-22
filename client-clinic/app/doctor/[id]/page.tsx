@@ -57,11 +57,11 @@ function getClinicInfo(id?: number) {
 }
 
 export default function DoctorDetailPage() {
-    
+
     const params = useParams();
     const router = useRouter();
     const doctorId = Number(params.id);
-    
+
     const [doctor, setDoctor] = useState<DoctorResponse | null>(null);
     const [schedules, setSchedules] = useState<DoctorScheduleResponse[]>([]);
     const [loading, setLoading] = useState(true);
@@ -94,14 +94,14 @@ export default function DoctorDetailPage() {
         fetchAvailableSlots(doctorId, selectedDate)
             .then((sched) => {
                 let sorted = sched.sort((a, b) => a.startTime.localeCompare(b.startTime));
-                
+
                 // Filter out past slots if selected date is today
                 const todayStr = getTodayStr();
                 if (selectedDate === todayStr) {
                     const currentTimeStr = getCurrentTimeStr();
                     sorted = sorted.filter(slot => slot.startTime >= currentTimeStr);
                 }
-                
+
                 setSchedules(sorted);
                 setSlotsLoading(false);
             })
@@ -127,7 +127,7 @@ export default function DoctorDetailPage() {
             // Validate maximum 3 active appointments to prevent spam
             try {
                 const userAppointments = await fetchAppointmentsByPatient(user.userId);
-                const activeAppointments = userAppointments.filter(app => 
+                const activeAppointments = userAppointments.filter(app =>
                     app.status !== "CANCELLED" && app.status !== "COMPLETED"
                 );
                 if (activeAppointments.length >= 3) {
@@ -153,7 +153,7 @@ export default function DoctorDetailPage() {
             setTimeout(() => setBookingSuccess(false), 5000);
         } catch (err: any) {
             let message = err.message || "Đặt lịch thất bại. Vui lòng thử lại.";
-            
+
             // Handle specific conflict messages from backend
             if (message.includes("Đã có lịch khám") || message.includes("đã đặt một gói khám") || message.includes("đã có người đặt")) {
                 message = "Đã có lịch khám vào khung giờ này.";
@@ -162,7 +162,7 @@ export default function DoctorDetailPage() {
             } else if (message.includes("not found")) {
                 message = "Thông tin không hợp lệ hoặc đã bị thay đổi.";
             }
-            
+
             setBookingError(message);
         } finally {
             setBookingLoading(false);
@@ -250,7 +250,7 @@ export default function DoctorDetailPage() {
                                 <div className="w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden bg-white flex-shrink-0">
                                     {doctor.featureImageUrl ? (
                                         <img
-                                            src={`http://localhost:8081${doctor.featureImageUrl}`}
+                                            src={`http://139.59.109.214:8081${doctor.featureImageUrl}`}
                                             alt={doctor.fullName}
                                             className="w-full h-full object-cover"
                                         />
@@ -352,13 +352,12 @@ export default function DoctorDetailPage() {
                                             key={index}
                                             onClick={() => setSelectedSchedule(isSelected ? null : slot)}
                                             disabled={!isAvailable}
-                                            className={`px-4 py-4 rounded-xl text-sm font-semibold transition-all duration-200 border text-center flex items-center justify-center min-h-[60px] ${
-                                                !isAvailable
+                                            className={`px-4 py-4 rounded-xl text-sm font-semibold transition-all duration-200 border text-center flex items-center justify-center min-h-[60px] ${!isAvailable
                                                     ? "bg-gray-100 text-gray-400 border-gray-100 cursor-not-allowed opacity-50"
                                                     : isSelected
                                                         ? "bg-[var(--green-mid)] text-white border-[var(--green-mid)] shadow-md scale-105 z-10"
                                                         : "bg-white text-gray-700 hover:bg-[#E6EFFF] hover:text-[#0065FF] border-gray-200 hover:border-[var(--green-mid)]"
-                                            }`}
+                                                }`}
                                         >
                                             <span>
                                                 {formatTime(slot.startTime)} - {formatTime(slot.endTime)}
@@ -451,7 +450,7 @@ export default function DoctorDetailPage() {
                             <span className="font-medium">{"Đặt lịch khám thành công!"}</span>
                         </div>
                     )}
-                    
+
                     {/* Error Dialog Modal */}
                     {bookingError && (
                         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
