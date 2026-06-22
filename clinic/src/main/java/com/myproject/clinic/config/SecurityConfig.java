@@ -57,7 +57,22 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
 
                         // ── Public: Auth, ảnh tĩnh ──────────────────────────
-                        .requestMatchers("/api/auth/**", "/images/**").permitAll()
+                        .requestMatchers(
+                            "/doctors/**",
+                            "/images/**",
+                            "/uploads/**",
+                            "/assets/**",
+                            "/*.png",
+                            "/*.jpg",
+                            "/*.jpeg",
+                            "/*.webp",
+                            "/*.svg",
+                            "/swagger-ui/**",
+                            "/swagger-ui.html",
+                            "/v3/api-docs/**",
+                            "/api/auth/**",
+                            "/error"
+                        ).permitAll()
 
                         // ── Public: Dữ liệu xem công khai (không cần đăng nhập) ──
                         .requestMatchers(HttpMethod.GET, "/api/doctors", "/api/doctors/**").permitAll()
