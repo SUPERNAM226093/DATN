@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
             {
                 // Ảnh upload từ backend Spring Boot (avatar bác sĩ, ảnh phòng...)
                 protocol: "http",
-                hostname: "localhost",
+                hostname: "139.59.109.214",
                 port: "8081",
                 pathname: "/api/files/**",
             },
