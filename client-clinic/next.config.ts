@@ -7,9 +7,8 @@ const nextConfig: NextConfig = {
         remotePatterns: [
             {
                 // Ảnh upload từ backend Spring Boot (avatar bác sĩ, ảnh phòng...)
-                protocol: "http",
-                hostname: "139.59.109.214",
-                port: "8081",
+                protocol: "https",
+                hostname: "sandy-marker-trance-column.trycloudflare.com",
                 pathname: "/api/files/**",
             },
         ],

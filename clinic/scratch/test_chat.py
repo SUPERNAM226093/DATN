@@ -7,7 +7,7 @@ import io
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 try:
-    url = "http://139.59.109.214:8081/api/chat"
+    url = "https://sandy-marker-trance-column.trycloudflare.com//api/chat"
     req = urllib.request.Request(url, method="POST")
     req.add_header('Content-Type', 'application/json')
     data = {

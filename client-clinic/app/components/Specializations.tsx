@@ -186,7 +186,7 @@ export default function Specializations() {
                                     <div className="absolute inset-0 bg-gradient-to-br from-[var(--green-ultra)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                                     {spec.featureImageUrl ? (
                                         <img
-                                            src={`http://139.59.109.214:8081${spec.featureImageUrl}`}
+                                            src={`https://sandy-marker-trance-column.trycloudflare.com/${spec.featureImageUrl}`}
                                             alt={spec.name}
                                             className="w-10 h-10 object-contain relative z-10 transition-transform group-hover:scale-110"
                                         />

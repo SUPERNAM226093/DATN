@@ -6,7 +6,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://139.59.109.214:8081";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://sandy-marker-trance-column.trycloudflare.com/";
 
 interface CardItem {
     id: number;

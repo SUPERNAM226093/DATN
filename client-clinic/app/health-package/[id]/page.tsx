@@ -204,7 +204,7 @@ export default function HealthPackageDetailPage() {
                         <div className="h-72 bg-gradient-to-br from-[#F3F0FF] to-[#f9f8ff] flex items-center justify-center relative overflow-hidden">
                             {pkg.featureImageUrl ? (
                                 <img
-                                    src={`http://139.59.109.214:8081${pkg.featureImageUrl}`}
+                                    src={`https://sandy-marker-trance-column.trycloudflare.com/${pkg.featureImageUrl}`}
                                     alt={pkg.name}
                                     className="w-full h-full object-cover"
                                 />
@@ -281,10 +281,10 @@ export default function HealthPackageDetailPage() {
                                             onClick={() => setSelectedSlot(isSelected ? null : slot)}
                                             disabled={isBooked}
                                             className={`py-4 rounded-xl text-sm font-semibold transition-all duration-200 border text-center ${isBooked
-                                                    ? "bg-gray-100 text-gray-400 border-gray-100 cursor-not-allowed opacity-50"
-                                                    : isSelected
-                                                        ? "bg-[#f26522] text-white border-[#f26522] shadow-md shadow-[#f26522]/30 scale-105"
-                                                        : "bg-white text-gray-700 hover:bg-orange-50 hover:text-[#f26522] border-gray-200 hover:border-[#f26522]/30"
+                                                ? "bg-gray-100 text-gray-400 border-gray-100 cursor-not-allowed opacity-50"
+                                                : isSelected
+                                                    ? "bg-[#f26522] text-white border-[#f26522] shadow-md shadow-[#f26522]/30 scale-105"
+                                                    : "bg-white text-gray-700 hover:bg-orange-50 hover:text-[#f26522] border-gray-200 hover:border-[#f26522]/30"
                                                 }`}
                                         >
                                             {slot.start} – {slot.end}

@@ -250,7 +250,7 @@ export default function DoctorDetailPage() {
                                 <div className="w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden bg-white flex-shrink-0">
                                     {doctor.featureImageUrl ? (
                                         <img
-                                            src={`http://139.59.109.214:8081${doctor.featureImageUrl}`}
+                                            src={`https://sandy-marker-trance-column.trycloudflare.com/${doctor.featureImageUrl}`}
                                             alt={doctor.fullName}
                                             className="w-full h-full object-cover"
                                         />
@@ -353,10 +353,10 @@ export default function DoctorDetailPage() {
                                             onClick={() => setSelectedSchedule(isSelected ? null : slot)}
                                             disabled={!isAvailable}
                                             className={`px-4 py-4 rounded-xl text-sm font-semibold transition-all duration-200 border text-center flex items-center justify-center min-h-[60px] ${!isAvailable
-                                                    ? "bg-gray-100 text-gray-400 border-gray-100 cursor-not-allowed opacity-50"
-                                                    : isSelected
-                                                        ? "bg-[var(--green-mid)] text-white border-[var(--green-mid)] shadow-md scale-105 z-10"
-                                                        : "bg-white text-gray-700 hover:bg-[#E6EFFF] hover:text-[#0065FF] border-gray-200 hover:border-[var(--green-mid)]"
+                                                ? "bg-gray-100 text-gray-400 border-gray-100 cursor-not-allowed opacity-50"
+                                                : isSelected
+                                                    ? "bg-[var(--green-mid)] text-white border-[var(--green-mid)] shadow-md scale-105 z-10"
+                                                    : "bg-white text-gray-700 hover:bg-[#E6EFFF] hover:text-[#0065FF] border-gray-200 hover:border-[var(--green-mid)]"
                                                 }`}
                                         >
                                             <span>
