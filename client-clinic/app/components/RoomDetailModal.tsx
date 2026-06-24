@@ -45,7 +45,7 @@ export default function RoomDetailModal({ room, onClose, onBook }: Props) {
                 <div className="relative h-64">
                     {room.images && room.images.length > 0 ? (
                         <img
-                            src={`https://outline-puzzle-york-maple.trycloudflare.com/${room.images[0]}`}
+                            src={`https://silent-vector-chi-steven.trycloudflare.com/${room.images[0]}`}
                             alt={room.name}
                             className="w-full h-full object-cover"
                         />

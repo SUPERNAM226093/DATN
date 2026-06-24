@@ -60,7 +60,7 @@ services:
       - "5174:5173"
     environment:
       - INTERNAL_API_URL=http://backend:8080
-      - NEXT_PUBLIC_API_URL=https://outline-puzzle-york-maple.trycloudflare.com
+      - NEXT_PUBLIC_API_URL=https://silent-vector-chi-steven.trycloudflare.com
     depends_on:
       - backend
     restart: unless-stopped
