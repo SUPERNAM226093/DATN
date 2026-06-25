@@ -73,6 +73,10 @@ public class MedicalRecordService {
                                 .orElseThrow(() -> new ResourceNotFoundException("Lịch hẹn",
                                                 request.getAppointmentId()));
 
+                medicalRecordRepository.findByAppointmentId(request.getAppointmentId()).ifPresent(existing -> {
+                        throw new IllegalArgumentException("Lich hen nay da co ho so benh an. Vui long chon lich hen khac hoac cap nhat ho so hien co.");
+                });
+
                 // BẢO MẬT: Xác thực danh tính bác sĩ qua JWT Token
                 Long resolvedDoctorId = securityUtils.resolveAndValidateDoctorId(request.getDoctorId());
                 Doctor doctor = doctorRepository.findById(resolvedDoctorId)
@@ -133,6 +137,7 @@ public class MedicalRecordService {
                 return MedicalRecordResponse.builder()
                                 .id(r.getId())
                                 .appointmentId(r.getAppointment() != null ? r.getAppointment().getId() : null)
+                                .doctorId(r.getDoctor() != null ? r.getDoctor().getId() : null)
                                 .doctorName(r.getDoctor() != null && r.getDoctor().getUser() != null
                                                 ? r.getDoctor().getUser().getFullName()
                                                 : "N/A")

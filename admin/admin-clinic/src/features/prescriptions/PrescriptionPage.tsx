@@ -16,7 +16,7 @@ import { useAuth } from '../../store/AuthContext';
 
 interface PrescriptionItem { medicineName: string; dosage: string; frequency: string; duration: string; note: string; }
 interface Prescription { id: number; medicalRecordId: number; doctorId: number; doctorName: string; createdAt: string; items: PrescriptionItem[]; }
-interface MedicalRecordOption { id: number; doctorName: string; diagnosis: string; }
+interface MedicalRecordOption { id: number; doctorId: number; doctorName: string; diagnosis: string; }
 interface DoctorOption { id: number; userId: number; fullName: string; specializationName: string; }
 
 const emptyItem: PrescriptionItem = { medicineName: '', dosage: '', frequency: '', duration: '', note: '' };
@@ -55,13 +55,21 @@ export default function PrescriptionPage() {
 
     const fetchOptions = async () => {
         try {
-            const [mrRes, docRes] = await Promise.all([
+            const [mrRes, docRes, prescriptionRes] = await Promise.all([
                 api.get('/medical-records'),
                 api.get('/doctors'),
+                api.get('/prescriptions'),
             ]);
-            setMedicalRecords(mrRes.data);
-            setDoctors(docRes.data);
-        } catch { /* Bỏ qua lỗi nếu danh sách tạm thời trống */ }
+            const doctorList: DoctorOption[] = docRes.data;
+            const currentDoctor = doctorList.find(d => d.userId === user?.userId);
+            const usedMedicalRecordIds = new Set((prescriptionRes.data as Prescription[]).map(p => p.medicalRecordId));
+            const availableRecords = (mrRes.data as MedicalRecordOption[]).filter(mr => {
+                const belongsToCurrentDoctor = !isDoctor || (currentDoctor && mr.doctorId === currentDoctor.id);
+                return belongsToCurrentDoctor && !usedMedicalRecordIds.has(mr.id);
+            });
+            setMedicalRecords(availableRecords);
+            setDoctors(doctorList);
+        } catch { /* Bo qua loi neu danh sach tam thoi trong */ }
     };
 
     useEffect(() => {

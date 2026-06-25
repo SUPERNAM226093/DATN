@@ -51,7 +51,7 @@ const menuItems: MenuItem[] = [
         subItems: [
             { key: "specializationBooking", name: "Đặt lịch khám theo chuyên khoa", href: "/specialization" },
             { key: "healthPackage", name: "Gói khám sức khỏe toàn diện", href: "/health-package" },
-            { key: "onlineConsultation", name: "Khám tư vấn từ xa", href: "/video-call" }
+            { key: "onlineConsultation", name: "Khám tư vấn từ xa", href: "/video-call/booking" }
         ]
     },
     {

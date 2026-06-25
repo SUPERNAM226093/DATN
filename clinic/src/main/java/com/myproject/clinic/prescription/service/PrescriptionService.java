@@ -54,6 +54,10 @@ public class PrescriptionService {
                                 .orElseThrow(() -> new ResourceNotFoundException("MedicalRecord",
                                                 request.getMedicalRecordId()));
 
+                prescriptionRepository.findByMedicalRecordId(request.getMedicalRecordId()).ifPresent(existing -> {
+                        throw new IllegalArgumentException("Ho so benh an nay da co don thuoc. Vui long chon ho so khac hoac cap nhat don hien co.");
+                });
+
                 securityUtils.assertDoctorOwnership("MedicalRecord (for Prescription creation)",
                                 record.getId(), record.getDoctor().getId());
 
