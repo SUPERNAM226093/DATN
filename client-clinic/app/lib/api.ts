@@ -1,7 +1,7 @@
 const isServer = typeof window === 'undefined';
 const API_BASE_URL = isServer
-    ? (process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || "https://silent-vector-chi-steven.trycloudflare.com")
-    : (process.env.NEXT_PUBLIC_API_URL || "https://silent-vector-chi-steven.trycloudflare.com");
+    ? (process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:8081")
+    : (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8081");
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 

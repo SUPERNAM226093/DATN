@@ -15,8 +15,8 @@ const emptyForm = { appointmentId: '', doctorId: '', diagnosis: '', conclusion: 
 
 export default function MedicalRecordPage() {
     const { user, isDoctor, isAdmin } = useAuth();
-    // Phân quyền cứng: DOCTOR chỉ được Xem/Sửa Hồ sơ bệnh án, không được Thêm/Xóa
-    const canAdd = isAdmin;
+    // ADMIN va DOCTOR duoc tao ho so benh an; chi ADMIN duoc xoa.
+    const canAdd = isAdmin || isDoctor;
     const canDelete = isAdmin;
     const [items, setItems] = useState<MedicalRecord[]>([]); // Danh sách bệnh án
     const [loading, setLoading] = useState(true);
