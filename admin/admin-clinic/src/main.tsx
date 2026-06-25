@@ -28,8 +28,22 @@ createRoot(document.getElementById('root')!).render(
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch((error) => {
-      console.error('Service Worker registration failed:', error)
-    })
+    navigator.serviceWorker.getRegistrations()
+      .then((registrations) => {
+        registrations.forEach((registration) => registration.unregister())
+      })
+      .catch((error) => {
+        console.error('Service Worker cleanup failed:', error)
+      })
+
+    caches.keys()
+      .then((cacheNames) => {
+        cacheNames
+          .filter((cacheName) => cacheName.startsWith('medpro-admin-'))
+          .forEach((cacheName) => caches.delete(cacheName))
+      })
+      .catch((error) => {
+        console.error('Service Worker cache cleanup failed:', error)
+      })
   })
 }
