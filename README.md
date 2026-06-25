@@ -43,35 +43,36 @@ cp .env.example .env
 # Chỉnh CLINIC_DB_PASS nếu MySQL root của bạn khác "root"
 ```
 
-### 2. Database (lần đầu)
+### 2. Database lan dau
 
-Đảm bảo MySQL đang chạy:
-
-```bash
-sudo systemctl start mysql
-chmod +x scripts/setup-db.sh scripts/dev-local.sh
-./scripts/setup-db.sh
-```
-
-Script tạo database `clinic` và import `clinic/database/init.sql` (dữ liệu + tài khoản mẫu).
-
-### 3. Chạy các dịch vụ
-
-Mở **4 terminal** tại thư mục gốc dự án:
+Dam bao MySQL dang chay, sau do tao database va import du lieu mau:
 
 ```bash
-./scripts/dev-local.sh backend   # Spring Boot
-./scripts/dev-local.sh ml        # Flask ML
-./scripts/dev-local.sh admin     # Admin UI
-./scripts/dev-local.sh client    # Client UI
+mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS clinic CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+mysql -u root -p clinic < clinic/database/init.sql
 ```
 
-Hoặc dùng **tmux** (một lệnh):
+### 3. Chay cac dich vu
+
+Mo 3 terminal tai thu muc goc du an va chay tung phan:
 
 ```bash
-./scripts/dev-local.sh all
-tmux attach -t clinic-dev
+cd clinic
+./gradlew bootRun
 ```
+
+```bash
+cd admin/admin-clinic
+npm install
+npm run dev
+```
+
+```bash
+cd client-clinic
+npm install
+npm run dev
+```
+
 
 ### 4. Truy cập
 
