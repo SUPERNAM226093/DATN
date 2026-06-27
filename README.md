@@ -1,146 +1,321 @@
-# Hệ Thống Phòng Khám Đa Khoa (MedPro DATN)
+# DATN MedPro - He thong phong kham
 
-Hệ thống phòng khám tích hợp chatbot RAG AI gồm Backend (Spring Boot), Client bệnh nhân (Next.js), Admin (Vite + React), ML dự đoán tim mạch (Python Flask) và MySQL. **Chạy trực tiếp trên máy local** — không dùng Docker.
+Du an gom 3 phan chinh:
 
----
+- `clinic`: backend Spring Boot, MySQL, JWT, upload file, chatbot, VNPay.
+- `client-clinic`: website nguoi dung bang Next.js.
+- `admin/admin-clinic`: trang quan tri bang Vite + React.
 
-## Kiến trúc & cổng mặc định
+Mac dinh chay local:
 
-| Dịch vụ | Công nghệ | URL local |
-| :--- | :--- | :--- |
-| **Backend API** | Java 17 + Gradle | http://localhost:8080 |
-| **Admin** | Vite + React | http://localhost:3000 |
-| **Client (bệnh nhân)** | Next.js | http://localhost:5173 |
-| **ML Predictor** | Flask | http://localhost:5000 |
-| **MySQL** | 8.x | `localhost:3306` (gồm phiên chatbot `chat_sessions`) |
+| Thanh phan | Thu muc | Cong |
+| --- | --- | --- |
+| Backend API | `clinic` | `https://silent-vector-chi-steven.trycloudflare.com` |
+| Client | `client-clinic` | `http://localhost:5173` |
+| Admin | `admin/admin-clinic` | `http://localhost:3000` |
+| MySQL | local | `localhost:3306` |
 
----
+## Yeu cau
 
-## Yêu cầu cài đặt
+Can cai san:
 
-| Thành phần | Phiên bản gợi ý |
-| :--- | :--- |
-| **JDK** | 17 (`openjdk-17-jdk`) |
-| **Node.js** | 20+ |
-| **Python** | 3.10+ |
-| **MySQL** | 8.0 |
+- JDK 17
+- Node.js 20+
+- MySQL 8+
+- Git
 
-Ubuntu/Debian:
+Kiem tra nhanh:
 
 ```bash
-sudo apt update
-sudo apt install -y openjdk-17-jdk nodejs npm python3 python3-venv mysql-server
+java -version
+node -v
+npm -v
+mysql --version
+git --version
 ```
 
----
+Tren Windows nen dung PowerShell hoac terminal cua IDE.
 
-## Khởi chạy nhanh
-
-### 1. Biến môi trường
+## Clone project
 
 ```bash
-cp .env.example .env
-# Chỉnh CLINIC_DB_PASS nếu MySQL root của bạn khác "root"
+git clone https://github.com/SUPERNAM226093/DATN.git
+cd DATN
 ```
 
-### 2. Database lan dau
+## Tao database
 
-Dam bao MySQL dang chay, sau do tao database va import du lieu mau:
+Dang nhap MySQL roi tao database `clinic`:
 
 ```bash
-mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS clinic CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+mysql -u root -p
+```
+
+Trong MySQL:
+
+```sql
+CREATE DATABASE IF NOT EXISTS clinic
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_unicode_ci;
+EXIT;
+```
+
+Neu muon import du lieu mau tu file dump:
+
+```bash
 mysql -u root -p clinic < clinic/database/init.sql
 ```
 
-### 3. Chay cac dich vu
+Neu khong import dump, Spring Boot van co the tu tao/cap nhat bang nho `spring.jpa.hibernate.ddl-auto=update`, nhung se thieu du lieu mau.
 
-Mo 3 terminal tai thu muc goc du an va chay tung phan:
+## Cau hinh bien moi truong
 
-```bash
-cd clinic
-./gradlew bootRun
-```
+Tao file `.env` tai thu muc goc project `DATN/.env`.
 
-```bash
-cd admin/admin-clinic
-npm install
-npm run dev
-```
-
-```bash
-cd client-clinic
-npm install
-npm run dev
-```
-
-
-### 4. Truy cập
-
-- **Admin:** http://localhost:3000  
-- **Client:** http://localhost:5173  
-- **API:** http://localhost:8080  
-
----
-
-## Tài khoản mẫu
-
-| Vai trò | Email | Mật khẩu |
-| :--- | :--- | :--- |
-| Admin | `admin@gmail.com` | `123456` |
-| Bác sĩ | `doctor@gmail.com` | `123456` |
-| Bệnh nhân | `test@gmail.com` | `123456` |
-
----
-
-## Chạy từng phần thủ công
-
-**Backend** (thư mục `clinic/`, đọc `.env` từ thư mục gốc nếu chạy qua script):
-
-```bash
-cd clinic
-export $(grep -v '^#' ../.env | xargs) 2>/dev/null || true
-./gradlew bootRun
-```
-
-**Admin:**
-
-```bash
-cd admin/admin-clinic
-npm install
-BACKEND_URL=http://localhost:8080 npm run dev
-```
-
-**Client:**
-
-```bash
-cd client-clinic
-npm install
-NEXT_PUBLIC_API_URL=http://localhost:8080 npm run dev
-```
-
-## API keys (tùy chọn)
-
-Trong `.env`:
+Vi du local:
 
 ```env
-GEMINI_API_KEY=...    # Chatbot AI
-HF_TOKEN=...          # Hugging Face (nếu dùng)
-SMTP_EMAIL=...        # Gửi mail quên mật khẩu
-APP_PASSWORD=...
+DB_HOST=localhost
+CLINIC_DB_PORT=3306
+CLINIC_DB_NAME=clinic
+CLINIC_DB_USER=root
+CLINIC_DB_PASS=
+
+SERVER_PORT=8081
+JWT_SECRET=clinicSecretKeyForJWTtokenGeneration2026DefaultDevKey
+
+NEXT_PUBLIC_API_URL=https://silent-vector-chi-steven.trycloudflare.com
+INTERNAL_API_URL=https://silent-vector-chi-steven.trycloudflare.com
+BACKEND_URL=https://silent-vector-chi-steven.trycloudflare.com
+
+CHAT_SESSION_TTL_MINUTES=30
+HF_TOKEN=
+GROQ_API_KEY=
+
+VNP_TMN_CODE=2QXUIBJZ
+VNP_HASH_SECRET=MSZDFXCWXNTHXFGDXXMXNXHXKXVXJXXJ
+VNP_PAY_URL=https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+VNP_RETURN_URL=http://localhost:5173/video-call/payment/vnpay-callback
 ```
 
----
+Ghi chu:
 
-## Xử lý sự cố
+- `CLINIC_DB_PASS` de trong neu MySQL root khong co mat khau.
+- `NEXT_PUBLIC_API_URL` dung cho client Next.js.
+- `BACKEND_URL` dung cho proxy cua admin Vite.
+- Khi deploy production, doi cac URL local sang URL backend public.
 
-| Vấn đề | Gợi ý |
-| :--- | :--- |
-| Port 8080 bị chiếm | Đổi `SERVER_PORT=8081` trong `.env`, và `BACKEND_URL` / `NEXT_PUBLIC_API_URL` tương ứng |
-| Backend không kết nối MySQL | Kiểm tra `sudo systemctl status mysql`, user/pass trong `.env` |
-| Admin 403 / CORS | `SecurityConfig` đã cho phép `localhost:3000`, `5173` |
-| Chatbot mất ngữ cảnh sau F5 | `ChatWidget` dùng `sessionStorage`; kiểm tra bảng `chat_sessions` và backend đã chạy Flyway V26+ |
-| Thiếu Java | `sudo apt install openjdk-17-jdk` |
+## Chay backend
 
----
+Mo terminal 1:
 
-*Phân quyền: xem ma trận quyền tại Admin → Quyền truy cập (`/role-urls`), chỉ tài khoản ADMIN.*
+```bash
+cd clinic
+./gradlew bootRun
+```
+
+Tren Windows neu `./gradlew` loi:
+
+```powershell
+cd clinic
+.\gradlew.bat bootRun
+```
+
+Backend se chay tai:
+
+```txt
+https://silent-vector-chi-steven.trycloudflare.com
+```
+
+## Chay client nguoi dung
+
+Mo terminal 2:
+
+```bash
+cd client-clinic
+npm install
+npm run dev
+```
+
+Client se chay tai:
+
+```txt
+http://localhost:5173
+```
+
+Neu can chi dinh backend khi chay local:
+
+```bash
+NEXT_PUBLIC_API_URL=https://silent-vector-chi-steven.trycloudflare.com npm run dev
+```
+
+PowerShell:
+
+```powershell
+$env:NEXT_PUBLIC_API_URL="https://silent-vector-chi-steven.trycloudflare.com"
+npm run dev
+```
+
+## Chay admin
+
+Mo terminal 3:
+
+```bash
+cd admin/admin-clinic
+npm install
+npm run dev
+```
+
+Admin se chay tai:
+
+```txt
+http://localhost:3000
+```
+
+Neu can chi dinh backend:
+
+```bash
+BACKEND_URL=https://silent-vector-chi-steven.trycloudflare.com npm run dev
+```
+
+PowerShell:
+
+```powershell
+$env:BACKEND_URL="https://silent-vector-chi-steven.trycloudflare.com"
+npm run dev
+```
+
+## Build kiem tra
+
+Client:
+
+```bash
+cd client-clinic
+npm run build
+```
+
+Admin:
+
+```bash
+cd admin/admin-clinic
+npm run build
+```
+
+Backend:
+
+```bash
+cd clinic
+./gradlew test
+```
+
+Windows:
+
+```powershell
+cd clinic
+.\gradlew.bat test
+```
+
+## Cau hinh production
+
+### Client tren Vercel
+
+Trong Vercel, vao Project Settings -> Environment Variables, them:
+
+```env
+NEXT_PUBLIC_API_URL=https://your-backend-domain
+INTERNAL_API_URL=https://your-backend-domain
+```
+
+Vi du neu dang dung Cloudflare Tunnel:
+
+```env
+NEXT_PUBLIC_API_URL=https://silent-vector-chi-steven.trycloudflare.com
+INTERNAL_API_URL=https://silent-vector-chi-steven.trycloudflare.com
+```
+
+Sau khi doi env tren Vercel, can redeploy.
+
+### Admin tren Vercel hoac hosting khac
+
+Them bien:
+
+```env
+BACKEND_URL=https://your-backend-domain
+```
+
+Admin goi API qua `/api`, Vite dev server se proxy ve `BACKEND_URL` khi chay local.
+
+### Backend
+
+Backend can cac bien:
+
+```env
+DB_HOST=...
+CLINIC_DB_PORT=3306
+CLINIC_DB_NAME=clinic
+CLINIC_DB_USER=...
+CLINIC_DB_PASS=...
+SERVER_PORT=8081
+JWT_SECRET=...
+```
+
+Neu dung VNPay production/test, cap nhat:
+
+```env
+VNP_TMN_CODE=...
+VNP_HASH_SECRET=...
+VNP_PAY_URL=...
+VNP_RETURN_URL=https://your-client-domain/video-call/payment/vnpay-callback
+```
+
+## Upload va hien thi anh
+
+Backend luu duong dan anh trong DB, frontend hien thi bang helper `getImageUrl()` trong:
+
+```txt
+client-clinic/app/lib/api.ts
+```
+
+Neu anh hien local nhung len production khong hien, kiem tra:
+
+1. API tra ve `featureImageUrl` co gia tri khong.
+2. `NEXT_PUBLIC_API_URL` tren Vercel co tro dung backend public khong.
+3. URL anh ghep ra co mo truc tiep duoc tren trinh duyet khong.
+4. Backend co public duong dan `/images/...` hoac endpoint file tuong ung khong.
+
+## Len GitHub
+
+```bash
+git status
+git add .
+git commit -m "Your commit message"
+git push origin main
+```
+
+Neu chi muon day file da sua:
+
+```bash
+git add path/to/file
+git commit -m "Fix something"
+git push origin main
+```
+
+## Loi thuong gap
+
+| Loi | Cach xu ly |
+| --- | --- |
+| Backend khong ket noi MySQL | Kiem tra MySQL dang chay, database `clinic`, user/pass trong `.env` |
+| Port 8081 bi chiem | Doi `SERVER_PORT`, dong thoi doi `NEXT_PUBLIC_API_URL` va `BACKEND_URL` |
+| Client khong goi duoc API tren Vercel | Them `NEXT_PUBLIC_API_URL` dung domain backend va redeploy |
+| Anh bac si/phong/goi kham khong hien | Kiem tra `featureImageUrl`, URL backend public, va duong dan `/images/...` |
+| Build Next loi Google Fonts khi offline | Can co internet de Next tai font tu Google trong luc build |
+| Admin 401 sau khi login | Xoa localStorage/token cu va dang nhap lai |
+
+## Duong dan hay dung
+
+- Client: `http://localhost:5173`
+- Admin: `http://localhost:3000`
+- Backend API: `https://silent-vector-chi-steven.trycloudflare.com`
+- Doctors API: `https://silent-vector-chi-steven.trycloudflare.com/api/doctors`
+- Specializations API: `https://silent-vector-chi-steven.trycloudflare.com/api/specializations`
+- Health packages API: `https://silent-vector-chi-steven.trycloudflare.com/api/health-packages`
