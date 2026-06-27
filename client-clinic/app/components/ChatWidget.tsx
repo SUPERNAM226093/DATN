@@ -7,7 +7,7 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8081";
-
+https://silent-vector-chi-steven.trycloudflare.com
 interface CardItem {
     id: number;
     name: string;
