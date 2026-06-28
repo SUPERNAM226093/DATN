@@ -10,7 +10,7 @@ session_id = "chat-" + str(uuid.uuid4())
 
 def send_msg(message):
     print(f"\nUser: {message}")
-    url = "https://silent-vector-chi-steven.trycloudflare.com/api/chat"
+    url = "https://jean-skirt-term-des.trycloudflare.com/api/chat"
     req = urllib.request.Request(url, method="POST")
     req.add_header('Content-Type', 'application/json')
     data = {

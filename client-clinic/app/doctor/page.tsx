@@ -126,7 +126,7 @@ export default function DoctorListPage() {
                                     <div className="flex gap-4 items-center">
                                         <div className="w-16 h-16 rounded-full overflow-hidden flex-shrink-0 border-2 border-gray-100 group-hover:border-black transition-colors">
                                             {doc.featureImageUrl ? (
-                                                <img src={`https://silent-vector-chi-steven.trycloudflare.com${doc.featureImageUrl}`} alt={doc.fullName} className="w-full h-full object-cover" />
+                                                <img src={`https://scholars-foot-burner-pose.trycloudflare.com${doc.featureImageUrl}`} alt={doc.fullName} className="w-full h-full object-cover" />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center text-white text-xl font-bold" style={{ backgroundColor: AVATAR_COLORS[doc.id % AVATAR_COLORS.length] }}>
                                                     {doc.fullName?.split(" ").pop()?.charAt(0) || "?"}

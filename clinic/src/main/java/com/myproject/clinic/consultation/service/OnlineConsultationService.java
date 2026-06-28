@@ -40,7 +40,7 @@ public class OnlineConsultationService {
      * LOGIC: Khởi tạo đơn đăng ký tư vấn trực tuyến.
      * GIẢI THÍCH: Khi bệnh nhân chọn bác sĩ và khung giờ Video Call.
      * XỬ LÝ: Hệ thống tự động đặt trạng thái là PENDING và thiết lập thời gian hết
-     * hạn là 30 phút.
+     * hạn là 15 phút.
      * CẬP NHẬT: Thêm @Transactional và Pessimistic Lock trên entity Doctor để chống
      * Race Condition (Trùng lịch).
      */
@@ -91,8 +91,8 @@ public class OnlineConsultationService {
                 .paymentStatus("PENDING")
                 .consultationDate(consultationDate)
                 .consultationTime(req.getConsultationTime())
-                // QUAN TRỌNG: Thiết lập thời hạn thanh toán là 30 phút kể từ lúc tạo đơn
-                .expiredAt(LocalDateTime.now().plusMinutes(30))
+                // QUAN TRỌNG: Thiết lập thời hạn thanh toán là 15 phút kể từ lúc tạo đơn
+                .expiredAt(LocalDateTime.now().plusMinutes(15))
                 .build();
 
         return toResponse(consultationRepository.save(consultation));
@@ -255,7 +255,7 @@ public class OnlineConsultationService {
 
     /**
      * TÍNH NĂNG TỰ ĐỘNG (Scheduler): Tự động hủy các đơn chưa thanh toán.
-     * CƠ CHẾ: Cứ mỗi 1 phút, hệ thống sẽ quét các đơn PENDING mà quá 30 phút chưa
+     * CƠ CHẾ: Cứ mỗi 1 phút, hệ thống sẽ quét các đơn PENDING đã quá hạn 15 phút chưa
      * thanh toán.
      * GIẢI THÍCH: Giúp giải phóng khung giờ bận cho bác sĩ để người khác có thể
      * đặt.
