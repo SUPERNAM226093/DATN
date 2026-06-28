@@ -3,13 +3,11 @@
 import { useRouter } from "next/navigation";
 
 /**
- * Component Nút Quay Lại (Back).
- * Sử dụng `useRouter` từ thư viện `next/navigation` để thực hiện hành động quay lại trang trước đó trong lịch sử duyệt web.
- * Được thiết kế nhỏ gọn với icon SVG để dùng chung trên nhiều trang.
+ * Component Nút  quay lại trang trước đó trong lịch sử duyệt web.
  */
 export default function BackButton() {
     const router = useRouter();
-    
+
     return (
         <button
             onClick={() => router.back()}

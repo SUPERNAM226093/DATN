@@ -11,9 +11,7 @@ export const metadata: Metadata = {
 
 /**
  * Trang "Tìm cơ sở y tế gần bạn".
- * Sử dụng cấu trúc layout chung của ứng dụng bao gồm Navbar, Footer và nút BackButton.
- * Toàn bộ logic hiển thị bản đồ và tính toán khoảng cách được đóng gói trong NearestClinicWrapper
- * để xử lý việc tải bất đồng bộ (CSR - Client Side Rendering) do React-Leaflet yêu cầu đối tượng `window`.
+ * Sử dụng cấu trúc layout chung
  */
 export default function NearestClinicPage() {
   return (

@@ -70,16 +70,6 @@ function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-/**
- * Gọi API của OpenStreetMap Routing Machine (OSRM) để lấy khoảng cách, thời gian và lộ trình di chuyển THỰC TẾ trên đường bộ.
- * 
- * @param fromLat Vĩ độ điểm xuất phát
- * @param fromLng Kinh độ điểm xuất phát
- * @param toLat Vĩ độ điểm đến
- * @param toLng Kinh độ điểm đến
- * @returns Đối tượng chứa: distanceKm (khoảng cách km), durationMin (thời gian phút), và polyline (mảng các tọa độ để vẽ đường đi trên bản đồ)
- * @throws Bắn ra lỗi nếu API OSRM không tìm thấy đường đi (ví dụ: khoảng cách quá xa, bị ngăn cách bởi biển/sông mà không có cầu)
- */
 async function getRealRoadDistance(fromLat: number, fromLng: number, toLat: number, toLng: number) {
   // Cấu trúc URL gọi API của OSRM. Chú ý: OSRM nhận tọa độ theo thứ tự (Kinh độ, Vĩ độ) tức là (Lng, Lat)
   const url =
@@ -111,26 +101,11 @@ async function getRealRoadDistance(fromLat: number, fromLng: number, toLat: numb
   };
 }
 
-/**
- * Component chính chứa giao diện và toàn bộ logic chức năng "Tìm cơ sở y tế gần bạn".
- * Sử dụng thư viện React-Leaflet để hiển thị bản đồ tương tác và vẽ lộ trình di chuyển.
- */
 export default function NearestClinicContent() {
   const [address, setAddress] = useState("");
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number; displayName: string } | null>(null);
   const [results, setResults] = useState<(typeof clinics[0] & { distance: number; duration: number | null; distanceType: string; polyline?: [number, number][] })[]>([]);
 
-  /**
-   * Xử lý sự kiện khi người dùng bấm nút "Tìm cơ sở gần nhất" hoặc nhấn phím Enter.
-   * Các bước xử lý logic:
-   * 1. Kiểm tra tính hợp lệ của địa chỉ đầu vào.
-   * 2. Gọi Nominatim API của OpenStreetMap để lấy tọa độ (Geocoding) dựa trên địa chỉ văn bản.
-   * 3. Cập nhật state `userLocation` với tọa độ tìm được để render Marker người dùng trên bản đồ.
-   * 4. Duyệt qua danh sách 5 cơ sở y tế cố định (`clinics`) để đo khoảng cách:
-   *    - Gọi hàm `getRealRoadDistance` để đo khoảng cách đường bộ thực tế.
-   *    - Nếu lỗi (do mạng hoặc OSRM không tìm ra đường), tự động Fallback (dự phòng) sử dụng `calculateDistance` (đường chim bay).
-   * 5. Sắp xếp danh sách cơ sở tăng dần theo khoảng cách (từ gần nhất đến xa nhất) và cập nhật state `results`.
-   */
   const handleSearch = async () => {
     if (!address.trim()) {
       alert("Vui lòng nhập địa chỉ của bạn");
@@ -194,7 +169,7 @@ export default function NearestClinicContent() {
             return {
               ...clinic,
               distance: Number(straightDistance.toFixed(2)),
-              duration: null, // Đường chim bay không thể tính được thời gian đi (do không biết đi xe gì, tắc đường không)
+              duration: null, // Đường chim bay không thể tính được thời gian đi
               distanceType: "STRAIGHT_LINE" // Gắn cờ cho biết kết quả này là đường chim bay
             };
           }
