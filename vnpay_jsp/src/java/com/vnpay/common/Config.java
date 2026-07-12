@@ -40,12 +40,12 @@ public class Config {
 
     // Mã website / merchant do VNPay cấp.
     // Khi tích hợp thật, cần điền mã vnp_TmnCode được VNPay cung cấp.
-    public static String vnp_TmnCode = "";
+    public static String vnp_TmnCode = "2LE0NQ35";
 
     // Khóa bí mật do VNPay cấp.
     // Khóa này còn gọi là vnp_HashSecret.
     // Dùng để tạo và kiểm tra chữ ký vnp_SecureHash.
-    public static String secretKey = "";
+    public static String secretKey = "42AG3QJQROXLFPTKX8CVAII1G44EX0BJ";
 
     // URL API truy vấn giao dịch của VNPay.
     // Dùng cho các nghiệp vụ kiểm tra hoặc truy vấn trạng thái giao dịch.
