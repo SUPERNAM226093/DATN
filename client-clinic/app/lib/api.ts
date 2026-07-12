@@ -1,8 +1,8 @@
 const isServer = typeof window === 'undefined';
-const localApiUrl = process.env.NODE_ENV === 'development' ? "http://localhost:8081" : "";
+const defaultApiUrl = "https://jean-skirt-term-des.trycloudflare.com";
 export const API_BASE_URL = (isServer
-    ? (process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || localApiUrl)
-    : (process.env.NEXT_PUBLIC_API_URL || ""))
+    ? (process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || defaultApiUrl)
+    : (process.env.NEXT_PUBLIC_API_URL || defaultApiUrl))
     .trim()
     .replace(/\/$/, '');
 
