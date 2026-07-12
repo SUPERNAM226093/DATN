@@ -8,12 +8,19 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
 import java.util.*;
+import java.time.Duration;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Slf4j
 @Service
 public class VnPayService {
+
+    private static final ZoneId PAYMENT_TIME_ZONE = ZoneId.of("Asia/Ho_Chi_Minh");
+    private static final DateTimeFormatter VNPAY_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+    private static final String PRODUCTION_RETURN_URL = "https://datn-uqz1.vercel.app/video-call/payment/vnpay-callback";
 
     @Value("${vnp.tmn.code}")
     private String tmnCode;
@@ -40,7 +47,14 @@ public class VnPayService {
     }
 
     private String getReturnUrl() {
-        return returnUrl != null ? returnUrl.trim() : "";
+        String configuredUrl = returnUrl != null ? returnUrl.trim() : "";
+        if (configuredUrl.isBlank()
+                || configuredUrl.contains("localhost")
+                || configuredUrl.contains("127.0.0.1")
+                || configuredUrl.contains("medpronam.vercel.app")) {
+            return PRODUCTION_RETURN_URL;
+        }
+        return configuredUrl;
     }
 
     /**
@@ -66,17 +80,10 @@ public class VnPayService {
         vnp_Params.put("vnp_ReturnUrl", getReturnUrl());
         vnp_Params.put("vnp_IpAddr", ipAddr);
 
-        TimeZone paymentTimeZone = TimeZone.getTimeZone("Asia/Ho_Chi_Minh");
-        Calendar cld = Calendar.getInstance(paymentTimeZone);
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-        formatter.setTimeZone(paymentTimeZone);
-
-        String vnp_CreateDate = formatter.format(cld.getTime());
-        vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
-
-        cld.add(Calendar.MINUTE, 15);
-        String vnp_ExpireDate = formatter.format(cld.getTime());
-        vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
+        ZonedDateTime createdAt = ZonedDateTime.now(PAYMENT_TIME_ZONE).withNano(0);
+        ZonedDateTime expiresAt = createdAt.plus(Duration.ofMinutes(15));
+        vnp_Params.put("vnp_CreateDate", VNPAY_DATE_FORMAT.format(createdAt));
+        vnp_Params.put("vnp_ExpireDate", VNPAY_DATE_FORMAT.format(expiresAt));
 
         List<String> fieldNames = new ArrayList<>(vnp_Params.keySet());
         Collections.sort(fieldNames);
