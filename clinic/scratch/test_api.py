@@ -2,7 +2,7 @@ import urllib.request
 import json
 
 try:
-    url = "https://jean-skirt-term-des.trycloudflare.com/api/services"
+    url = "http://localhost:8081 /api/services"
     response = urllib.request.urlopen(url)
     data = json.loads(response.read().decode('utf-8'))
     print("Services returned from API:")

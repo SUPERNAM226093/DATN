@@ -2,11 +2,11 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://jean-skirt-term-des.trycloudflare.com/api/:path*"
+      "destination": "http://localhost:8081/api/:path*"
     },
     {
       "source": "/images/:path*",
-      "destination": "https://jean-skirt-term-des.trycloudflare.com/images/:path*"
+      "destination": "http://localhost:8081/images/:path*"
     },
     {
       "source": "/(.*)",

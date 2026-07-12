@@ -28,9 +28,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain) throws ServletException, IOException {
         // 1. Lấy thông tin tiêu đề "Authorization" từ HTTP Request gửi lên
         final String authHeader = request.getHeader("Authorization");
-
-        // Nếu header trống hoặc không bắt đầu bằng tiền tố "Bearer ", bỏ qua bộ lọc này
-        // và đi tiếp tới filter tiếp theo
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;

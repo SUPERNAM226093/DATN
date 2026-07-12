@@ -1,35 +1,43 @@
 package com.myproject.clinic.repository;
 
 import com.myproject.clinic.entity.HealthPackageBooking;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Collection;
 import java.util.List;
 
-@Repository
 public interface HealthPackageBookingRepository extends JpaRepository<HealthPackageBooking, Long> {
-    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"patient", "healthPackage"})
+
+    @EntityGraph(attributePaths = { "patient", "healthPackage" })
     List<HealthPackageBooking> findByPatientIdOrderByCreatedAtDesc(Long patientId);
-    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"patient", "healthPackage"})
+
+    @EntityGraph(attributePaths = { "patient", "healthPackage" })
     List<HealthPackageBooking> findByHealthPackageIdOrderByBookingDateAscBookingTimeAsc(Long healthPackageId);
-    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"patient", "healthPackage"})
-    List<HealthPackageBooking> findByCreatedAtBetween(java.time.LocalDateTime start, java.time.LocalDateTime end);
+
+    @EntityGraph(attributePaths = { "patient", "healthPackage" })
+    List<HealthPackageBooking> findByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
 
     boolean existsByPatientIdAndBookingDateAndBookingTimeAndStatusNotIn(
-            Long patientId, java.time.LocalDate date, java.time.LocalTime time, java.util.Collection<String> statuses);
+            Long patientId, LocalDate date, LocalTime time, Collection<String> statuses);
 
     boolean existsByHealthPackageIdAndBookingDateAndBookingTimeAndStatusNotIn(
-            Long healthPackageId, java.time.LocalDate date, java.time.LocalTime time, java.util.Collection<String> statuses);
+            Long healthPackageId, LocalDate date, LocalTime time, Collection<String> statuses);
 
     boolean existsByHealthPackageIdAndBookingDateAndBookingTimeAndStatusNotInAndIdNot(
-            Long healthPackageId, java.time.LocalDate date, java.time.LocalTime time, java.util.Collection<String> statuses, Long id);
+            Long healthPackageId, LocalDate date, LocalTime time, Collection<String> statuses, Long id);
 
-    @org.springframework.data.jpa.repository.Query("SELECT COUNT(h) > 0 FROM HealthPackageBooking h WHERE h.healthPackage.id = :healthPackageId " +
-            "AND (h.bookingDate > :today OR (h.bookingDate = :today AND h.bookingTime > :nowTime)) " +
-            "AND h.status NOT IN :doneStatuses")
+    @Query("SELECT COUNT(h) > 0 FROM HealthPackageBooking h WHERE h.healthPackage.id = :healthPackageId "
+            + "AND (h.bookingDate > :today OR (h.bookingDate = :today AND h.bookingTime > :nowTime)) "
+            + "AND h.status NOT IN :doneStatuses")
     boolean existsFutureActiveBookingByHealthPackageId(
-            @org.springframework.data.repository.query.Param("healthPackageId") Long healthPackageId,
-            @org.springframework.data.repository.query.Param("today") java.time.LocalDate today,
-            @org.springframework.data.repository.query.Param("nowTime") java.time.LocalTime nowTime,
-            @org.springframework.data.repository.query.Param("doneStatuses") java.util.Collection<String> doneStatuses);
+            @Param("healthPackageId") Long healthPackageId,
+            @Param("today") LocalDate today,
+            @Param("nowTime") LocalTime nowTime,
+            @Param("doneStatuses") Collection<String> doneStatuses);
 }

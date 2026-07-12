@@ -24,12 +24,15 @@ export const metadata: Metadata = {
     "Kết nối Người Dân với Cơ sở & Dịch vụ Y tế hàng đầu. Đặt khám nhanh, lấy số thứ tự trực tuyến, tư vấn sức khỏe từ xa.",
   keywords:
     "đặt khám, bệnh viện, bác sĩ, y tế, sức khỏe, medpro, khám bệnh trực tuyến",
-  themeColor: '#0f766e',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
     title: 'MedPro',
   },
+};
+
+export const viewport = {
+  themeColor: '#0f766e',
 };
 
 export default function RootLayout({

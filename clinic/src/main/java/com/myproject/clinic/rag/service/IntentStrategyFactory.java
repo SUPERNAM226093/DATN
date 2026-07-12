@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * === FACTORY PATTERN ===
- *
  * Factory chọn đúng Strategy handler dựa trên intent string.
  *
  * Spring tự inject toàn bộ bean implement ChatbotIntentStrategy.

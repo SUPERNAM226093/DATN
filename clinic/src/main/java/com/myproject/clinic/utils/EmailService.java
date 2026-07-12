@@ -115,7 +115,6 @@ public class EmailService {
         sendHtmlEmail(to, subject, htmlContent);
     }
 
-
     @Async
     @Transactional
     public void sendPrescriptionEmail(Long prescriptionId) {
@@ -156,17 +155,22 @@ public class EmailService {
         String htmlContent = String.format(
                 "<html><head><style>" +
                         "body { font-family: Arial, sans-serif; background-color: #f7f9fc; padding: 20px; }" +
-                        ".container { background-color: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 600px; margin: auto; }" +
+                        ".container { background-color: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 600px; margin: auto; }"
+                        +
                         "h2 { color: #0056b3; }" +
-                        ".code-box { background-color: #f1f3f5; border: 1px dashed #0056b3; padding: 15px; text-align: center; font-size: 24px; font-weight: bold; color: #d63384; letter-spacing: 5px; margin: 20px 0; }" +
-                        ".footer { margin-top: 30px; font-size: 12px; color: #999; text-align: center; border-top: 1px solid #ddd; padding-top: 10px; }" +
+                        ".code-box { background-color: #f1f3f5; border: 1px dashed #0056b3; padding: 15px; text-align: center; font-size: 24px; font-weight: bold; color: #d63384; letter-spacing: 5px; margin: 20px 0; }"
+                        +
+                        ".footer { margin-top: 30px; font-size: 12px; color: #999; text-align: center; border-top: 1px solid #ddd; padding-top: 10px; }"
+                        +
                         "</style></head><body>" +
                         "<div class='container'>" +
                         "<h2>Khôi phục mật khẩu</h2>" +
                         "<p>Xin chào <b>%s</b>,</p>" +
-                        "<p>Chúng tôi nhận được yêu cầu khôi phục mật khẩu cho tài khoản của bạn. Vui lòng sử dụng mã xác nhận dưới đây để tiếp tục:</p>" +
+                        "<p>Chúng tôi nhận được yêu cầu khôi phục mật khẩu cho tài khoản của bạn. Vui lòng sử dụng mã xác nhận dưới đây để tiếp tục:</p>"
+                        +
                         "<div class='code-box'>%s</div>" +
-                        "<p>Mã này có hiệu lực trong vòng <b>15 phút</b>. Nếu bạn không yêu cầu thay đổi này, vui lòng bỏ qua email này.</p>" +
+                        "<p>Mã này có hiệu lực trong vòng <b>15 phút</b>. Nếu bạn không yêu cầu thay đổi này, vui lòng bỏ qua email này.</p>"
+                        +
                         "<div class='footer'>Cảm ơn bạn đã thăm khám tại Clinic.</div>" +
                         "</div></body></html>",
                 fullName,
@@ -174,7 +178,8 @@ public class EmailService {
         log.info("Sending email to: " + to);
         boolean sent = sendHtmlEmail(to, subject, htmlContent);
         if (!sent) {
-            throw new IllegalStateException("Không gửi được email khôi phục mật khẩu. Vui lòng kiểm tra SMTP_EMAIL và APP_PASSWORD.");
+            throw new IllegalStateException(
+                    "Không gửi được email khôi phục mật khẩu. Vui lòng kiểm tra SMTP_EMAIL và APP_PASSWORD.");
         }
     }
 

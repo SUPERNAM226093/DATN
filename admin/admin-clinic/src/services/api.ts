@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { Logger } from '../utils/logger';
 
-// Khởi tạo instance Axios với đường dẫn cơ sở là '/api' để gọi các endpoint backend
 const api = axios.create({
     baseURL: '/api',
 });
@@ -40,10 +39,10 @@ api.interceptors.response.use(
                 url: error.config?.url,
                 data: error.response?.data
             });
-            
+
             // Tạm thời hiển thị Toast thay vì kích ra ngay lập tức để User (và mình) kịp nhìn thấy URL nào gây lỗi 401
             alert(`[DEBUG] Lỗi 401 ở API: ${error.config?.url}. Đã ghi log.`);
-            
+
             // Tiến hành dọn dẹp các thông tin đăng nhập cũ trong localStorage để bảo mật thông tin
             localStorage.removeItem('token');
             localStorage.removeItem('user');

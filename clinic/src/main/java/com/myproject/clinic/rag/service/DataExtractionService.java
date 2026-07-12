@@ -45,12 +45,6 @@ public class DataExtractionService {
         return extract(message, intents, null);
     }
 
-    /**
-     * @param message
-     * @param intents
-     * @param chatHistory
-     * @return
-     */
     public ExtractionResult extract(String message, List<String> intents,
             List<java.util.Map<String, String>> chatHistory) {
         String today = LocalDate.now().format(DATE_FORMATTER);
@@ -106,12 +100,6 @@ public class DataExtractionService {
      * Nếu chuỗi JSON bị lỗi (ví dụ: LLM trả về văn bản thừa), hệ thống sẽ bắt
      * exception
      * và trả về một đối tượng ExtractionResult chứa các giá trị an toàn/mặc định.
-     *
-     * @param rawJson     Chuỗi JSON thô từ LLM
-     * @param intents     Danh sách các intent đã xác định trước đó
-     * @param defaultDate Ngày mặc định (ngày hôm nay) dùng để gán nếu JSON không có
-     *                    field date
-     * @return Đối tượng ExtractionResult đã được chuẩn hóa dữ liệu
      */
     private ExtractionResult parseAndValidate(String rawJson, List<String> intents, String defaultDate) {
         try {

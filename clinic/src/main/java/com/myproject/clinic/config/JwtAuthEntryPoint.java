@@ -13,10 +13,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Lớp xử lý lỗi chưa xác thực (JwtAuthEntryPoint).
- * Triển khai AuthenticationEntryPoint của Spring Security.
- * Chịu trách nhiệm bắt các yêu cầu không có quyền truy cập (chưa đăng nhập/không có token hợp lệ) 
- * và trả về phản hồi lỗi JSON dạng 401 Unauthorized thay vì trang HTML mặc định của máy chủ.
+ * Lớp xử lý lỗi chưa xác thực (JwtAuthEntryPoint)
+ * và trả về phản hồi lỗi JSON dạng 401 Unauthorized thay vì trang HTML mặc định
+ * của máy chủ.
  */
 @Component
 public class JwtAuthEntryPoint implements AuthenticationEntryPoint {
@@ -25,7 +24,8 @@ public class JwtAuthEntryPoint implements AuthenticationEntryPoint {
     public void commence(HttpServletRequest request,
             HttpServletResponse response,
             AuthenticationException authException) throws IOException {
-        // Thiết lập kiểu nội dung trả về là JSON và mã HTTP Status là 401 (Unauthorized)
+        // Thiết lập kiểu nội dung trả về là JSON và mã HTTP Status là 401
+        // (Unauthorized)
         response.setContentType("application/json");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
@@ -35,7 +35,8 @@ public class JwtAuthEntryPoint implements AuthenticationEntryPoint {
         body.put("status", 401);
         body.put("message", "Unauthorized: " + authException.getMessage());
 
-        // Sử dụng thư viện Jackson (ObjectMapper) để tuần tự hóa (serialize) Map thành chuỗi JSON viết trực tiếp ra Response
+        // Sử dụng thư viện Jackson (ObjectMapper) để tuần tự hóa (serialize) Map thành
+        // chuỗi JSON viết trực tiếp ra Response
         new ObjectMapper().writeValue(response.getOutputStream(), body);
     }
 }

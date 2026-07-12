@@ -4,9 +4,8 @@ const nextConfig: NextConfig = {
     images: {
         remotePatterns: [
             {
-                // Ảnh upload từ backend Spring Boot (avatar bác sĩ, ảnh phòng...)
                 protocol: "https",
-                hostname: "jean-skirt-term-des.trycloudflare.com",
+                hostname: "localhost",
                 pathname: "/api/files/**",
             },
         ],

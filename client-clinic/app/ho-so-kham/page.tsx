@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import {
-    fetchMyMedicalRecords,
+    fetchMedicalRecordsByPatient,
     fetchUserById,
     updateProfile,
     MedicalRecordResponse,
@@ -123,7 +123,7 @@ export default function MedicalRecordPage() {
 
                 // Fetch medical records
                 try {
-                    const recordsData = await fetchMyMedicalRecords();
+                    const recordsData = await fetchMedicalRecordsByPatient(loggedUser.userId);
                     setRecords(recordsData);
                 } catch (mErr) {
                     console.error("Failed to fetch medical records:", mErr);

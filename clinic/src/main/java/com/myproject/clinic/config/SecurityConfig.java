@@ -22,10 +22,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
-/**
- * Cấu hình bảo mật Spring Security (SecurityConfig).
- * Phân quyền cố định theo vai trò: ADMIN toàn quyền, STAFF và DOCTOR giới hạn theo chức năng lâm sàng.
- */
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -41,7 +37,6 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // 1. CORS
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
                 // 2. Tắt CSRF (dùng JWT stateless)
@@ -58,21 +53,21 @@ public class SecurityConfig {
 
                         // ── Public: Auth, ảnh tĩnh ──────────────────────────
                         .requestMatchers(
-                            "/doctors/**",
-                            "/images/**",
-                            "/uploads/**",
-                            "/assets/**",
-                            "/*.png",
-                            "/*.jpg",
-                            "/*.jpeg",
-                            "/*.webp",
-                            "/*.svg",
-                            "/swagger-ui/**",
-                            "/swagger-ui.html",
-                            "/v3/api-docs/**",
-                            "/api/auth/**",
-                            "/error"
-                        ).permitAll()
+                                "/doctors/**",
+                                "/images/**",
+                                "/uploads/**",
+                                "/assets/**",
+                                "/*.png",
+                                "/*.jpg",
+                                "/*.jpeg",
+                                "/*.webp",
+                                "/*.svg",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**",
+                                "/api/auth/**",
+                                "/error")
+                        .permitAll()
 
                         // ── Public: Dữ liệu xem công khai (không cần đăng nhập) ──
                         .requestMatchers(HttpMethod.GET, "/api/doctors", "/api/doctors/**").permitAll()
@@ -100,7 +95,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/health-package-bookings").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/health-package-bookings/*/cancel").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/online-consultations").permitAll()
-                        .requestMatchers(HttpMethod.GET,  "/api/online-consultations/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/online-consultations/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/online-consultations/*/cancel").permitAll()
 
                         // ── Public: AI & ML ──────────────────────────────────
@@ -110,6 +105,7 @@ public class SecurityConfig {
                         // ── ADMIN: Toàn quyền quản lý người dùng, vai trò ───
                         // Bệnh nhân được xem thông tin cá nhân của chính mình
                         .requestMatchers(HttpMethod.GET, "/api/users/{id}").permitAll()
+                        .requestMatchers("/api/users/profile").authenticated()
                         .requestMatchers("/api/users/**").hasAnyRole("ADMIN", "STAFF", "DOCTOR")
                         .requestMatchers("/api/roles/**").hasRole("ADMIN")
                         .requestMatchers("/api/doctors/**").hasAnyRole("ADMIN", "DOCTOR", "STAFF")
@@ -131,8 +127,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/prescriptions/**").hasAnyRole("ADMIN", "DOCTOR")
 
                         // ── Mọi request còn lại phải đăng nhập ──────────────
-                        .anyRequest().authenticated()
-                )
+                        .anyRequest().authenticated())
 
                 // 6. Auth provider
                 .authenticationProvider(authenticationProvider())

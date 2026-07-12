@@ -17,13 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- * Xử lý các câu hỏi về Thống kê & Danh sách:
- * - "Phòng khám có bao nhiêu bác sĩ?"
- * - "Bên mình có những chuyên khoa nào?"
- * - "Liệt kê bác sĩ khoa Nhi."
- * - "Khoa Tim mạch có bác sĩ nào giỏi?"
- */
 @Component
 @Slf4j
 @RequiredArgsConstructor
@@ -56,18 +49,12 @@ public class StatisticsIntentHandler implements ChatbotIntentStrategy {
     /**
      * Logic chính của xử lý Thống kê (STATISTICS).
      * Phân nhánh xử lý:
-     * 1. Có ID Chuyên khoa: Lọc danh sách bác sĩ thuộc khoa đó, sắp xếp theo kinh
-     * nghiệm.
+     * 1. Có ID Chuyên khoa: Lọc danh sách bác sĩ thuộc khoa đó
      * 2. Có Tên Chuyên khoa nhưng không tìm thấy ID: Thông báo lỗi lịch sự, liệt kê
      * tên các khoa có sẵn.
      * 3. Hỏi chung chung: Lấy toàn bộ danh sách khoa, đếm số lượng bác sĩ từng
      * khoa, và gợi ý top 5 bác sĩ giỏi nhất.
-     * Cuối cùng, ghép các chuỗi văn bản tạo thành `dbContext` và đưa vào LLM để
-     * sinh ra câu trả lời tự nhiên.
-     *
-     * @param message Tin nhắn gốc của người dùng
-     * @param params  Dữ liệu đã trích xuất (Tên khoa, ID khoa,...)
-     * @return Đối tượng ChatResponse chứa câu trả lời và danh sách thẻ UI
+     * Cuối cùng, ghép các chuỗi văn bản tạo thành `dbContext` và đưa vào LLM
      */
     public ChatResponse handle(String message, ExtractionResult params) {
         StringBuilder dbContext = new StringBuilder();

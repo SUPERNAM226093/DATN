@@ -2,9 +2,10 @@ package com.myproject.clinic.repository;
 
 import com.myproject.clinic.entity.HealthPackage;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
-@Repository
+import java.util.List;
+
 public interface HealthPackageRepository extends JpaRepository<HealthPackage, Long> {
-    java.util.List<HealthPackage> findByStatus(String status);
+
+    List<HealthPackage> findByStatus(String status);
 }

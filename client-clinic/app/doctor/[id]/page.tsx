@@ -250,7 +250,7 @@ export default function DoctorDetailPage() {
                                 <div className="w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden bg-white flex-shrink-0">
                                     {doctor.featureImageUrl ? (
                                         <img
-                                            src={`https://jean-skirt-term-des.trycloudflare.com${doctor.featureImageUrl}`}
+                                            src={`http://localhost:8081${doctor.featureImageUrl}`}
                                             alt={doctor.fullName}
                                             className="w-full h-full object-cover"
                                         />

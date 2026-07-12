@@ -52,7 +52,7 @@ public class RoomService {
     public RoomDTO updateRoom(Long id, RoomDTO dto) {
         Room room = roomRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Room not found"));
-        
+
         room.setName(dto.getName());
         room.setFloor(dto.getFloor());
         room.setBedType(dto.getBedType());
@@ -67,7 +67,7 @@ public class RoomService {
         room.setTotalBeds(dto.getTotalBeds());
         room.setAvailableBeds(dto.getAvailableBeds());
         room.setStatus(dto.getStatus());
-        
+
         return convertToDTO(roomRepository.save(room));
     }
 
@@ -84,16 +84,16 @@ public class RoomService {
         System.out.println(">>> Received request to upload image for Room ID: " + id);
         Room room = roomRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Room not found"));
-        
+
         String imageUrl = fileStorageService.store(file, "rooms");
         System.out.println(">>> Room image stored at: " + imageUrl);
-        
+
         if (room.getImages() == null) {
             room.setImages(new ArrayList<>());
         }
         // Add new image at the beginning so it becomes the thumbnail
         room.getImages().add(0, imageUrl);
-        
+
         return convertToDTO(roomRepository.save(room));
     }
 
@@ -110,16 +110,16 @@ public class RoomService {
         dto.setServiceFee(room.getServiceFee());
         dto.setDescription(room.getDescription());
         dto.setAmenities(room.getAmenities());
-        
+
         // Map image paths to /images/ path
         if (room.getImages() != null) {
             dto.setImages(room.getImages().stream()
-                .map(img -> img.startsWith("/") ? img : "/images/" + img)
-                .collect(Collectors.toList()));
+                    .map(img -> img.startsWith("/") ? img : "/images/" + img)
+                    .collect(Collectors.toList()));
         }
-        
+
         dto.setIsActive(room.getIsActive());
-        
+
         // Logical status
         String status = room.getStatus() != null ? room.getStatus() : "AVAILABLE";
         Integer totalBeds = room.getTotalBeds() != null ? room.getTotalBeds() : 1;
@@ -152,7 +152,8 @@ public class RoomService {
                 .amenities(dto.getAmenities())
                 .images(dto.getImages())
                 .totalBeds(dto.getTotalBeds() != null ? dto.getTotalBeds() : 1)
-                .availableBeds(dto.getAvailableBeds() != null ? dto.getAvailableBeds() : (dto.getTotalBeds() != null ? dto.getTotalBeds() : 1))
+                .availableBeds(dto.getAvailableBeds() != null ? dto.getAvailableBeds()
+                        : (dto.getTotalBeds() != null ? dto.getTotalBeds() : 1))
                 .status(dto.getStatus() != null ? dto.getStatus() : "AVAILABLE")
                 .isActive(dto.getIsActive() != null ? dto.getIsActive() : true)
                 .build();

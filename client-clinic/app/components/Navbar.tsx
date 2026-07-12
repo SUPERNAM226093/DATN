@@ -80,6 +80,7 @@ const menuItems: MenuItem[] = [
 ];
 
 type AuthTab = "login" | "register" | "forgot";
+const SHOW_PWA_DOWNLOAD_BUTTON = false;
 
 export default function Navbar() {
     const pathname = usePathname();
@@ -574,7 +575,7 @@ export default function Navbar() {
                         {/* DESKTOP USER/AUTH CONTROLS */}
                         <div className="hidden lg:flex items-center gap-3">
                             {/* PWA Download Button */}
-                            {!isStandalone && (isInstallable || isIOS) && (
+                            {SHOW_PWA_DOWNLOAD_BUTTON && !isStandalone && (isInstallable || isIOS) && (
                                 <button
                                     onClick={() =>
                                         isIOS

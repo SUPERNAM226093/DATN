@@ -163,7 +163,7 @@ export default function HealthPackages() {
                             <div
                                 key={pkg.id}
                                 onClick={() => router.push(`/health-package/${pkg.id}`)}
-                                className="flex-shrink-0 w-[260px] snap-start card-premium overflow-hidden cursor-pointer"
+                                className="flex-shrink-0 w-[260px] snap-start card-premium overflow-hidden cursor-pointer flex flex-col"
                             >
                                 {/* PHẦN HÌNH ẢNH MINH HỌA GÓI KHÁM */}
                                 <div className="h-40 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center relative overflow-hidden">
@@ -187,8 +187,8 @@ export default function HealthPackages() {
                                 </div>
 
                                 {/* Content */}
-                                <div className="p-4">
-                                    <h3 className="text-sm font-bold text-[#000000] mb-2 leading-tight">
+                                <div className="p-4 flex flex-col flex-1">
+                                    <h3 className="text-sm font-bold text-[#000000] mb-2 leading-tight line-clamp-2 min-h-[34px]">
                                         {pkg.name}
                                     </h3>
                                     {pkg.description && (
@@ -210,7 +210,7 @@ export default function HealthPackages() {
 
                                     <button
                                         onClick={(e) => { e.stopPropagation(); router.push(`/health-package/${pkg.id}`); }}
-                                        className="w-full btn-premium text-sm py-2.5 rounded-lg"
+                                        className="w-full btn-premium text-sm py-2.5 rounded-lg mt-auto"
                                     >
                                         {"Đặt khám ngay"}
                                     </button>

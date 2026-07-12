@@ -167,10 +167,7 @@ public class AliasNormalizationService {
     /**
      * Tìm kiếm một chuyên khoa theo tên chính xác (không phân biệt hoa thường).
      */
-    /**
-     * Tìm chuyên khoa theo tên chuẩn sau khi alias đã được ánh xạ.
-     * Hàm này là bước cuối để lấy entity thật trong database từ tên đã chuẩn hóa.
-     */
+
     private Optional<Specialization> findByName(String name) {
         return specializationRepository.findAll().stream()
                 .filter(s -> s.getName().equalsIgnoreCase(name))

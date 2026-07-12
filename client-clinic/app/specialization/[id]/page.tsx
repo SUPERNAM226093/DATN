@@ -120,7 +120,7 @@ export default function SpecializationDetailPage() {
                                 <div className="w-20 h-20 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/20 flex-shrink-0">
                                     {specialization.featureImageUrl ? (
                                         <img
-                                            src={`https://jean-skirt-term-des.trycloudflare.com${specialization.featureImageUrl}`}
+                                            src={`http://localhost:8081${specialization.featureImageUrl}`}
                                             alt={specialization.name}
                                             className="w-12 h-12 object-contain"
                                         />
@@ -190,7 +190,7 @@ export default function SpecializationDetailPage() {
                                         <div className="w-16 h-16 rounded-full overflow-hidden flex-shrink-0 border-2 border-gray-100 group-hover:border-[var(--green-mid)] transition-colors">
                                             {doc.featureImageUrl ? (
                                                 <img
-                                                    src={`https://jean-skirt-term-des.trycloudflare.com${doc.featureImageUrl}`}
+                                                    src={`http://localhost:8081${doc.featureImageUrl}`}
                                                     alt={doc.fullName}
                                                     className="w-full h-full object-cover"
                                                 />

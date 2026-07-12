@@ -2,12 +2,16 @@ package com.myproject.clinic.repository;
 
 import com.myproject.clinic.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
-@Repository
 public interface UserRepository extends JpaRepository<User, Long> {
+
     Optional<User> findByEmail(String email);
 
     Optional<User> findByEmailIgnoreCase(String email);
@@ -18,18 +22,18 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByRoleName(String roleName);
 
-    java.util.List<User> findByRoleName(String roleName);
+    List<User> findByRoleName(String roleName);
 
-    long countByRoleNameAndCreatedAtBetween(String roleName, java.time.LocalDateTime start, java.time.LocalDateTime end);
+    long countByRoleNameAndCreatedAtBetween(String roleName, LocalDateTime start, LocalDateTime end);
 
-    long countByRoleNameIgnoreCaseAndCreatedAtBetween(String roleName, java.time.LocalDateTime start, java.time.LocalDateTime end);
+    long countByRoleNameIgnoreCaseAndCreatedAtBetween(String roleName, LocalDateTime start, LocalDateTime end);
 
-    java.util.List<User> findByRoleNameAndCreatedAtBetween(String roleName, java.time.LocalDateTime start, java.time.LocalDateTime end);
+    List<User> findByRoleNameAndCreatedAtBetween(String roleName, LocalDateTime start, LocalDateTime end);
 
-    java.util.List<User> findByRoleNameIgnoreCaseAndCreatedAtBetween(String roleName, java.time.LocalDateTime start, java.time.LocalDateTime end);
+    List<User> findByRoleNameIgnoreCaseAndCreatedAtBetween(String roleName, LocalDateTime start, LocalDateTime end);
 
-    @org.springframework.data.jpa.repository.Modifying
-    @org.springframework.transaction.annotation.Transactional
-    @org.springframework.data.jpa.repository.Query("UPDATE User u SET u.createdAt = :now WHERE u.createdAt IS NULL")
-    void fixNullDates(java.time.LocalDateTime now);
+    @Modifying
+    @Transactional
+    @Query("UPDATE User u SET u.createdAt = :now WHERE u.createdAt IS NULL")
+    void fixNullDates(LocalDateTime now);
 }

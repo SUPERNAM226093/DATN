@@ -1,57 +1,57 @@
 package com.myproject.clinic.repository;
 
 import com.myproject.clinic.entity.RoomBooking;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 
-@Repository
 public interface RoomBookingRepository extends JpaRepository<RoomBooking, Long> {
-    
-    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"bookedBy", "room"})
+
+    @EntityGraph(attributePaths = { "bookedBy", "room" })
     List<RoomBooking> findByBookedById(Long userId);
-    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"bookedBy", "room"})
+
+    @EntityGraph(attributePaths = { "bookedBy", "room" })
     List<RoomBooking> findByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
 
-    @Query("SELECT b FROM RoomBooking b WHERE b.room.id = :roomId " +
-           "AND b.status IN ('CONFIRMED', 'CHECKED_IN') " +
-           "AND (:newCheckIn < b.checkOutDate AND :newCheckOut > b.checkInDate)")
-    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"bookedBy", "room"})
+    @Query("SELECT b FROM RoomBooking b WHERE b.room.id = :roomId "
+            + "AND b.status IN ('CONFIRMED', 'CHECKED_IN') "
+            + "AND (:newCheckIn < b.checkOutDate AND :newCheckOut > b.checkInDate)")
+    @EntityGraph(attributePaths = { "bookedBy", "room" })
     List<RoomBooking> findOverlappingBookings(
             @Param("roomId") Long roomId,
             @Param("newCheckIn") LocalDateTime newCheckIn,
-            @Param("newCheckOut") LocalDateTime newCheckOut
-    );
+            @Param("newCheckOut") LocalDateTime newCheckOut);
 
-    @Query("SELECT COUNT(r) > 0 FROM RoomBooking r WHERE r.room.id = :roomId " +
-           "AND r.status NOT IN :ignoredStatuses " +
-           "AND (r.checkInDate < :checkOut AND r.checkOutDate > :checkIn)")
+    @Query("SELECT COUNT(r) > 0 FROM RoomBooking r WHERE r.room.id = :roomId "
+            + "AND r.status NOT IN :ignoredStatuses "
+            + "AND (r.checkInDate < :checkOut AND r.checkOutDate > :checkIn)")
     boolean existsOverlappingBooking(
-        @Param("roomId") Long roomId, 
-        @Param("checkIn") LocalDateTime checkIn, 
-        @Param("checkOut") LocalDateTime checkOut, 
-        @Param("ignoredStatuses") java.util.Collection<String> ignoredStatuses);
+            @Param("roomId") Long roomId,
+            @Param("checkIn") LocalDateTime checkIn,
+            @Param("checkOut") LocalDateTime checkOut,
+            @Param("ignoredStatuses") Collection<String> ignoredStatuses);
 
-    @Query(value = "SELECT * FROM room_bookings r WHERE r.room_id = :roomId " +
-           "AND r.status NOT IN :ignoredStatuses " +
-           "AND (r.check_in_date < :checkOut AND r.check_out_date > :checkIn) LIMIT 1", nativeQuery = true)
+    @Query(value = "SELECT * FROM room_bookings r WHERE r.room_id = :roomId "
+            + "AND r.status NOT IN :ignoredStatuses "
+            + "AND (r.check_in_date < :checkOut AND r.check_out_date > :checkIn) LIMIT 1", nativeQuery = true)
     RoomBooking findFirstOverlappingBooking(
-        @Param("roomId") Long roomId, 
-        @Param("checkIn") LocalDateTime checkIn, 
-        @Param("checkOut") LocalDateTime checkOut, 
-        @Param("ignoredStatuses") java.util.Collection<String> ignoredStatuses);
+            @Param("roomId") Long roomId,
+            @Param("checkIn") LocalDateTime checkIn,
+            @Param("checkOut") LocalDateTime checkOut,
+            @Param("ignoredStatuses") Collection<String> ignoredStatuses);
 
-    @Query("SELECT COUNT(b) > 0 FROM RoomBooking b WHERE b.room.id = :roomId " +
-           "AND b.status IN ('CONFIRMED', 'CHECKED_IN') " +
-           "AND (CURRENT_TIMESTAMP BETWEEN b.checkInDate AND b.checkOutDate)")
+    @Query("SELECT COUNT(b) > 0 FROM RoomBooking b WHERE b.room.id = :roomId "
+            + "AND b.status IN ('CONFIRMED', 'CHECKED_IN') "
+            + "AND (CURRENT_TIMESTAMP BETWEEN b.checkInDate AND b.checkOutDate)")
     boolean isRoomOccupiedNow(@Param("roomId") Long roomId);
 
     boolean existsByRoomId(Long roomId);
 
-    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"bookedBy", "room"})
+    @EntityGraph(attributePaths = { "bookedBy", "room" })
     List<RoomBooking> findByStatus(String status);
 }

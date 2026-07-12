@@ -203,7 +203,7 @@ export default function DoctorConsultation() {
                                     <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center overflow-hidden border-4 border-white shadow-lg">
                                         {doctor.featureImageUrl ? (
                                             <img
-                                                src={`https://jean-skirt-term-des.trycloudflare.com${doctor.featureImageUrl}`}
+                                                src={`http://localhost:8081${doctor.featureImageUrl}`}
                                                 alt={doctor.fullName}
                                                 className="w-full h-full rounded-full object-cover"
                                             />

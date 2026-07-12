@@ -3,12 +3,11 @@
 // Bộ nhớ đệm được lưu trữ trực tiếp trên trình duyệt của thiết bị người dùng
 // cụ thể là trong "Cache Storage" (nằm trong tab Application -> Cache Storage của DevTools).
 // Định nghĩa phiên bản và tên của Cache Storage
-const CACHE_VERSION = 'v1.0.1';
+const CACHE_VERSION = 'v1.0.2';
 const CACHE_NAME = `medpro-clinic-${CACHE_VERSION}`;
 const PRECACHE_ASSETS = [
   '/',
   '/offline.html',
-  '/globals.css',
   '/icons/icon-192.png',
   '/icons/icon-512.png',
   '/logo-medpro.png'

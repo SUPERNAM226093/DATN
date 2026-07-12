@@ -16,13 +16,10 @@ import java.util.function.Function;
 
 @Component
 public class JwtConfig {
-
-    // Lấy giá trị khóa bí mật (secret key) cấu hình trong tệp
-    // application.properties hoặc .env
     @Value("${jwt.secret}")
     private String secretKey;
 
-    // Lấy thời hạn hết hạn của token (tính bằng mili-giây) từ cấu hình
+    // Lấy thời hạn hết hạn của token
     @Value("${jwt.expiration}")
     private long expiration;
 
@@ -40,9 +37,6 @@ public class JwtConfig {
                 .compact(); // Nén và trả về chuỗi JWT dạng String ngắn gọn
     }
 
-    /**
-     * Trích xuất Email/Username (Subject) ra khỏi Token JWT.
-     */
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }

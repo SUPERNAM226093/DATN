@@ -6,7 +6,7 @@
  * Hiển thị hình ảnh, mô tả, bảng chi tiết các loại phí và nút điều hướng tới bước đặt phòng.
  */
 
-import { RoomResponse } from "../lib/api";
+import { RoomResponse, getImageUrl } from "../lib/api";
 
 interface Props {
     room: RoomResponse; // Dữ liệu của phòng đang xem
@@ -45,7 +45,7 @@ export default function RoomDetailModal({ room, onClose, onBook }: Props) {
                 <div className="relative h-64">
                     {room.images && room.images.length > 0 ? (
                         <img
-                            src={`https://jean-skirt-term-des.trycloudflare.com/${room.images[0]}`}
+                            src={getImageUrl(room.images[0])}
                             alt={room.name}
                             className="w-full h-full object-cover"
                         />

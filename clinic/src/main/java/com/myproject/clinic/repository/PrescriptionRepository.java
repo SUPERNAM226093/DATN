@@ -1,23 +1,31 @@
 package com.myproject.clinic.repository;
 
 import com.myproject.clinic.entity.Prescription;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
-@Repository
 public interface PrescriptionRepository extends JpaRepository<Prescription, Long> {
-    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"medicalRecord", "doctor"})
-    Optional<Prescription> findByMedicalRecordId(Long medicalRecordId);
-    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"medicalRecord", "doctor"})
-    java.util.List<Prescription> findByMedicalRecordAppointmentPatientIdOrderByCreatedAtDesc(Long patientId);
-    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"medicalRecord", "doctor"})
-    java.util.List<Prescription> findByDoctorIdOrderByCreatedAtDesc(Long doctorId);
-    long countByCreatedAtBetween(java.time.LocalDateTime start, java.time.LocalDateTime end);
 
-    @org.springframework.data.jpa.repository.Modifying
-    @org.springframework.transaction.annotation.Transactional
-    @org.springframework.data.jpa.repository.Query("UPDATE Prescription p SET p.createdAt = :now WHERE p.createdAt IS NULL")
-    void fixNullDates(java.time.LocalDateTime now);
+    @EntityGraph(attributePaths = { "medicalRecord", "doctor" })
+    Optional<Prescription> findByMedicalRecordId(Long medicalRecordId);
+
+    @EntityGraph(attributePaths = { "medicalRecord", "doctor" })
+    List<Prescription> findByMedicalRecordAppointmentPatientIdOrderByCreatedAtDesc(Long patientId);
+
+    @EntityGraph(attributePaths = { "medicalRecord", "doctor" })
+    List<Prescription> findByDoctorIdOrderByCreatedAtDesc(Long doctorId);
+
+    long countByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Prescription p SET p.createdAt = :now WHERE p.createdAt IS NULL")
+    void fixNullDates(LocalDateTime now);
 }

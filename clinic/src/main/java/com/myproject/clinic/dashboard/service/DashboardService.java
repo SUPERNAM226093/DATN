@@ -17,11 +17,9 @@ import com.myproject.clinic.entity.Appointment;
 import com.myproject.clinic.repository.AppointmentRepository;
 import com.myproject.clinic.repository.HealthPackageBookingRepository;
 import com.myproject.clinic.repository.OnlineConsultationRepository;
-import com.myproject.clinic.repository.PrescriptionRepository;
 import com.myproject.clinic.repository.RoomBookingRepository;
 import com.myproject.clinic.repository.UserRepository;
 
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -30,14 +28,13 @@ public class DashboardService {
 
         private final UserRepository userRepository;
         private final AppointmentRepository appointmentRepository;
-        private final PrescriptionRepository prescriptionRepository;
         private final OnlineConsultationRepository onlineConsultationRepository;
         private final HealthPackageBookingRepository healthPackageBookingRepository;
         private final RoomBookingRepository roomBookingRepository;
 
         /**
          * LOGIC TRUNG TÂM: Tính toán số liệu thống kê cho Dashboard.
-         * GIẢI THÍCH: Hàm này lấy dữ liệu từ 3 bảng (User, Appointment, Prescription)
+         * GIẢI THÍCH: Hàm này lấy dữ liệu tổng hợp từ các bảng (User, Appointment, Booking...)
          * để so sánh kết quả giữa Giai đoạn hiện tại và Giai đoạn trước đó (để tính %
          * tăng trưởng).
          * 
@@ -46,10 +43,8 @@ public class DashboardService {
         public DashboardStatsResponse getStats(String dateStr) {
                 LocalDateTime now = LocalDateTime.now();
 
-                // XỬ LÝ KHÓ: Phân chia khoảng thời gian (Rolling Periods) cho 30 ngày mặc định
-                // Hiện tại là [T-30 đến Nay], Trước đó là [T-60 đến T-30]
+                // Khoảng thời gian hiển thị mặc định là 30 ngày gần nhất [T-30 đến Nay]
                 LocalDateTime currentStart = now.minusDays(30).with(LocalTime.MIN);
-                LocalDateTime prevStart = currentStart.minusDays(30);
                 int daysToDisplay = 30;
 
                 // BƯỚC 1: Tính toán 4 chỉ số thống kê tổng quan (30 ngày gần nhất)
@@ -188,16 +183,4 @@ public class DashboardService {
                                 .build();
         }
 
-        /**
-         * HẬU KHỞI TẠO (Backfill Data): Tự động sửa các dữ liệu thiếu ngày tháng khi
-         * chạy lần đầu.
-         * GIẢI THÍCH: Đảm bảo biểu đồ luôn có dữ liệu demo đẹp mắt cho buổi báo cáo.
-         */
-        @PostConstruct
-        public void backfillData() {
-                LocalDateTime now = LocalDateTime.now();
-                userRepository.fixNullDates(now.minusDays(2));
-                appointmentRepository.fixNullDates(now.minusDays(1));
-                prescriptionRepository.fixNullDates(now.minusHours(5));
-        }
 }

@@ -115,7 +115,7 @@ Nếu sau này bạn muốn backend dùng đúng domain/public IP cho frontend, 
 
 > Lưu ý: hiện tại compose đang hard-code:
 >
-> - `NEXT_PUBLIC_API_URL=https://jean-skirt-term-des.trycloudflare.com`
+> - `NEXT_PUBLIC_API_URL=http://localhost:8081 `
 >
 > Nghĩa là nếu người dùng mở frontend từ máy khác thì gọi API sẽ lỗi, vì `localhost` sẽ trỏ về máy của người dùng chứ không phải VPS.
 >
@@ -223,7 +223,7 @@ Tìm đoạn:
 client:
   environment:
     - INTERNAL_API_URL=http://backend:8080
-    - NEXT_PUBLIC_API_URL=https://jean-skirt-term-des.trycloudflare.com
+    - NEXT_PUBLIC_API_URL=http://localhost:8081 
 ```
 
 Đổi thành:
@@ -252,265 +252,161 @@ Admin hiện đang có:
 Nếu admin app chỉ gọi backend từ bên trong container/server-side thì có thể giữ nguyên. Nếu có issue gọi API từ browser, bạn sẽ cần kiểm tra cách app admin dùng biến này.
 
 ---
+Nếu dùng **Cloudflare Tunnel (`cloudflared`)**, quy trình sẽ như sau:
 
-## 7. Build và chạy toàn bộ stack
-
-Ở root project:
-
-```bash
-docker compose up -d --build
-```
-
-Lần đầu sẽ mất vài phút do phải:
-
-- kéo image MySQL, Redis
-- build backend
-- build client
-- build admin
-- build ML backend
-
-Kiểm tra trạng thái:
+### 1. SSH vào VPS
 
 ```bash
-docker compose ps
+ssh root@IP_VPS
 ```
 
-Xem log toàn hệ thống:
+### 2. Cài Java 17
 
 ```bash
-docker compose logs -f
+sudo apt update
+sudo apt install openjdk-17-jdk -y
 ```
 
-Xem log riêng backend:
+### 3. Cài MySQL
 
 ```bash
-docker compose logs -f backend
+sudo apt install mysql-server -y
 ```
 
-Xem log riêng client:
+Tạo database và user.
+
+### 4. Upload project
+
+* Upload file `app.jar`.
+* Upload file `.env`.
+
+### 5. Chạy ứng dụng
 
 ```bash
-docker compose logs -f client
+java -jar app.jar
 ```
 
-Xem log riêng admin:
-
-```bash
-docker compose logs -f admin
-```
-
----
-
-## 8. Mở port trên DigitalOcean / UFW
-
-Nếu VPS có bật `ufw`, mở các cổng cần dùng:
-
-```bash
-ufw allow OpenSSH
-ufw allow 8081/tcp
-ufw allow 5174/tcp
-ufw allow 3001/tcp
-ufw allow 5001/tcp
-ufw enable
-ufw status
-```
-
-Nếu chỉ test backend API thì chỉ cần mở `8081`.
-
-Nếu muốn truy cập giao diện patient/admin từ bên ngoài thì mở thêm:
-
-- `5174` cho client
-- `3001` cho admin
-
-**Không khuyến nghị** mở public các cổng sau nếu không thực sự cần:
-
-- `3307` (MySQL)
-- `6380` (Redis)
-
-Nếu bạn dùng **DigitalOcean Cloud Firewall**, tạo inbound rules tương ứng cho:
-
-- TCP `22`
-- TCP `8081`
-- TCP `5174`
-- TCP `3001`
-- TCP `5001`
-
----
-
-## 9. Kiểm tra sau khi deploy
-
-### 9.1 Backend API
-
-Mở trình duyệt hoặc Postman:
+Ứng dụng chạy tại:
 
 ```text
-http://YOUR_VPS_IP:8081
-```
-
-hoặc test một API thực tế của backend, ví dụ endpoint bạn đang dùng.
-
-### 9.2 Frontend patient
-
-```text
-http://YOUR_VPS_IP:5174
-```
-
-### 9.3 Frontend admin
-
-```text
-http://YOUR_VPS_IP:3001
-```
-
-### 9.4 ML backend
-
-```text
-http://YOUR_VPS_IP:5001
+http://localhost:8080
 ```
 
 ---
 
-## 10. Các lệnh vận hành thường dùng
+## 6. Cài Cloudflare Tunnel
 
-### Dừng hệ thống
-
-```bash
-docker compose down
-```
-
-### Dừng và xóa cả volumes
+Cài `cloudflared`:
 
 ```bash
-docker compose down -v
+curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb -o cloudflared.deb
+sudo dpkg -i cloudflared.deb
 ```
 
-> Lệnh này sẽ xóa dữ liệu MySQL/Redis trong volume. Chỉ dùng khi bạn chấp nhận mất dữ liệu.
-
-### Rebuild sau khi pull code mới
+Kiểm tra:
 
 ```bash
-git pull
-docker compose up -d --build
+cloudflared --version
 ```
 
-### Khởi động lại riêng backend
+
+
+## 8. Tạo Tunnel
 
 ```bash
-docker compose restart backend
+cloudflared tunnel create myapp
 ```
 
-### Xem container đang chạy
-
-```bash
-docker ps
-```
+Kết quả sẽ tạo một Tunnel ID.
 
 ---
 
-## 11. Các lỗi thường gặp
+## 9. Tạo file cấu hình
 
-### Lỗi frontend gọi API không được
-
-Nguyên nhân rất hay gặp là `NEXT_PUBLIC_API_URL` vẫn để `https://jean-skirt-term-des.trycloudflare.com` trong compose.
-
-Cách sửa:
-
-- đổi sang `http://YOUR_VPS_IP:8081`
-- build lại client:
+Ví dụ:
 
 ```bash
-docker compose up -d --build client
+sudo mkdir -p /etc/cloudflared
+sudo nano /etc/cloudflared/config.yml
 ```
 
-### Lỗi backend không lên vì không kết nối được MySQL
+Nội dung:
 
-Kiểm tra log:
+```yaml
+tunnel: <Tunnel-ID>
+credentials-file: /root/.cloudflared/<Tunnel-ID>.json
 
-```bash
-docker compose logs -f mysql
-docker compose logs -f backend
+ingress:
+  - hostname: api.tenmien.com
+    service: http://localhost:8080
+  - service: http_status:404
 ```
 
-Đảm bảo các biến sau khớp nhau:
+Ý nghĩa:
 
-- `MYSQL_ROOT_PASSWORD`
-- `CLINIC_DB_PASS`
-- `DB_HOST=mysql`
-- `CLINIC_DB_PORT=3306`
-
-### Lỗi chatbot/embedding không hoạt động
-
-Kiểm tra biến môi trường trong `.env`:
-
-- `HF_TOKEN`
-- `GEMINI_API_KEY`
-
-Sau đó restart backend:
-
-```bash
-docker compose restart backend
-```
-
-### Lỗi hết RAM khi build
-
-Nếu VPS quá nhỏ, build đồng thời nhiều service có thể fail. Cách xử lý:
-
-1. tăng RAM droplet
-2. build từng service
-3. thêm swap
-
-Ví dụ tạo swap 2GB:
-
-```bash
-fallocate -l 2G /swapfile
-chmod 600 /swapfile
-mkswap /swapfile
-swapon /swapfile
-echo '/swapfile none swap sw 0 0' >> /etc/fstab
-free -h
-```
+* `hostname`: domain sẽ truy cập.
+* `service`: chuyển request đến ứng dụng Java ở `localhost:8080`.
 
 ---
 
-## 12. Quy trình deploy ngắn gọn
-
-Nếu bạn muốn bản rút gọn để làm nhanh:
+## 10. Liên kết DNS
 
 ```bash
-ssh root@YOUR_VPS_IP
-apt update && apt upgrade -y
-apt install -y git curl ca-certificates
-curl -fsSL https://get.docker.com -o get-docker.sh
-sh get-docker.sh
-apt install -y docker-compose-plugin
-cd /opt
-git clone <URL_GIT_CUA_BAN> datn
-cd datn
-nano .env
-nano docker-compose.yaml
-docker compose up -d --build
-docker compose ps
-ufw allow OpenSSH
-ufw allow 8081/tcp
-ufw allow 5174/tcp
-ufw allow 3001/tcp
-ufw allow 5001/tcp
+cloudflared tunnel route dns myapp api.tenmien.com
 ```
+
+Cloudflare sẽ tự tạo bản ghi DNS trỏ đến Tunnel.
 
 ---
 
-## 13. Khuyến nghị tiếp theo
+## 11. Chạy Tunnel
 
-Để chạy production ổn hơn, bạn nên làm thêm các bước sau:
+```bash
+cloudflared tunnel run myapp
+```
 
-1. gắn domain
-2. dựng Nginx reverse proxy
-3. cấp HTTPS bằng Let’s Encrypt
-4. bỏ map public MySQL/Redis
-5. đổi toàn bộ secret mặc định
-6. tách file compose dev và compose production
+Hoặc cài làm service:
 
-Nếu bạn muốn, bước tiếp theo tôi có thể viết tiếp cho bạn file:
+```bash
+sudo cloudflared service install
+sudo systemctl enable cloudflared
+sudo systemctl start cloudflared
 
-- `docs/deploy-digitalocean-vps-with-domain-nginx-ssl.md`
+1. SSH vào VPS.
 
-để bạn deploy theo kiểu domain chuẩn production.
+2. Chạy ứng dụng Java:
+
+   ```bash
+   java -jar app.jar
+   ```
+
+   Ứng dụng chạy ở:
+
+   ```
+   http://localhost:8080
+   ```
+
+3. Cài `cloudflared`.
+
+4. Chạy lệnh:
+
+   ```bash
+   cloudflared tunnel --url http://localhost:8080
+   ```
+
+5. Sau vài giây, terminal sẽ hiện một đường dẫn như:
+
+   ```
+   https://abc123.trycloudflare.com
+   ```
+
+
+Luồng hoạt động:
+
+
+
+Nếu đúng như mô tả của thầy là **"chạy lệnh xong Cloudflare cấp link HTTPS luôn"**, thì gần như chắc chắn là đang dùng **Cloudflare Quick Tunnel** với lệnh:
+
+```bash
+cloudflared tunnel --url http://localhost:8080
+```

@@ -10,7 +10,7 @@ Mac dinh chay local:
 
 | Thanh phan | Thu muc | Cong |
 | --- | --- | --- |
-| Backend API | `clinic` | `https://jean-skirt-term-des.trycloudflare.com` |
+| Backend API | `clinic` | `http://localhost:8081 ` |
 | Client | `client-clinic` | `http://localhost:5173` |
 | Admin | `admin/admin-clinic` | `http://localhost:3000` |
 | MySQL | local | `localhost:3306` |
@@ -84,9 +84,9 @@ CLINIC_DB_PASS=
 SERVER_PORT=8081
 JWT_SECRET=clinicSecretKeyForJWTtokenGeneration2026DefaultDevKey
 
-NEXT_PUBLIC_API_URL=https://jean-skirt-term-des.trycloudflare.com
-INTERNAL_API_URL=https://jean-skirt-term-des.trycloudflare.com
-BACKEND_URL=https://jean-skirt-term-des.trycloudflare.com
+NEXT_PUBLIC_API_URL=http://localhost:8081 
+INTERNAL_API_URL=http://localhost:8081 
+BACKEND_URL=http://localhost:8081 
 
 CHAT_SESSION_TTL_MINUTES=30
 HF_TOKEN=
@@ -124,7 +124,7 @@ cd clinic
 Backend se chay tai:
 
 ```txt
-https://jean-skirt-term-des.trycloudflare.com
+http://localhost:8081 
 ```
 
 ## Chay client nguoi dung
@@ -146,13 +146,13 @@ http://localhost:5173
 Neu can chi dinh backend khi chay local:
 
 ```bash
-NEXT_PUBLIC_API_URL=https://jean-skirt-term-des.trycloudflare.com npm run dev
+NEXT_PUBLIC_API_URL=http://localhost:8081  npm run dev
 ```
 
 PowerShell:
 
 ```powershell
-$env:NEXT_PUBLIC_API_URL="https://jean-skirt-term-des.trycloudflare.com"
+$env:NEXT_PUBLIC_API_URL="http://localhost:8081 "
 npm run dev
 ```
 
@@ -175,13 +175,13 @@ http://localhost:3000
 Neu can chi dinh backend:
 
 ```bash
-BACKEND_URL=https://jean-skirt-term-des.trycloudflare.com npm run dev
+BACKEND_URL=http://localhost:8081  npm run dev
 ```
 
 PowerShell:
 
 ```powershell
-$env:BACKEND_URL="https://jean-skirt-term-des.trycloudflare.com"
+$env:BACKEND_URL="http://localhost:8081 "
 npm run dev
 ```
 
@@ -229,8 +229,8 @@ INTERNAL_API_URL=https://your-backend-domain
 Vi du neu dang dung Cloudflare Tunnel:
 
 ```env
-NEXT_PUBLIC_API_URL=https://jean-skirt-term-des.trycloudflare.com
-INTERNAL_API_URL=https://jean-skirt-term-des.trycloudflare.com
+NEXT_PUBLIC_API_URL=http://localhost:8081 
+INTERNAL_API_URL=http://localhost:8081 
 ```
 
 Sau khi doi env tren Vercel, can redeploy.
@@ -315,7 +315,7 @@ git push origin main
 
 - Client: `http://localhost:5173`
 - Admin: `http://localhost:3000`
-- Backend API: `https://jean-skirt-term-des.trycloudflare.com`
-- Doctors API: `https://jean-skirt-term-des.trycloudflare.com/api/doctors`
-- Specializations API: `https://jean-skirt-term-des.trycloudflare.com/api/specializations`
-- Health packages API: `https://jean-skirt-term-des.trycloudflare.com/api/health-packages`
+- Backend API: `http://localhost:8081 `
+- Doctors API: `http://localhost:8081 /api/doctors`
+- Specializations API: `http://localhost:8081 /api/specializations`
+- Health packages API: `http://localhost:8081 /api/health-packages`
