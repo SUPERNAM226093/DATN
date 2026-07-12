@@ -1,8 +1,10 @@
 import axios from 'axios';
 import { Logger } from '../utils/logger';
 
+const configuredApiUrl = import.meta.env.VITE_API_URL?.trim().replace(/\/$/, '');
+
 const api = axios.create({
-    baseURL: '/api',
+    baseURL: configuredApiUrl ? `${configuredApiUrl}/api` : '/api',
 });
 
 // Bộ chặn Request (Request Interceptor) - Tự động đính kèm Token xác thực JWT vào header trước khi gửi request
