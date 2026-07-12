@@ -3,7 +3,7 @@
 // Bộ nhớ đệm được lưu trữ trực tiếp trên trình duyệt của thiết bị người dùng
 // cụ thể là trong "Cache Storage" (nằm trong tab Application -> Cache Storage của DevTools).
 // Định nghĩa phiên bản và tên của Cache Storage
-const CACHE_VERSION = 'v1.0.2';
+const CACHE_VERSION = 'v1.0.3';
 const CACHE_NAME = `medpro-clinic-${CACHE_VERSION}`;
 const PRECACHE_ASSETS = [
   '/',
@@ -64,6 +64,9 @@ self.addEventListener('fetch', (event) => {
   // - Các đường dẫn nhạy cảm như Đăng nhập/Đăng ký (/api/auth), Cuộc gọi video (/video-call) và Kết nối Socket
   if (request.method !== 'GET' ||
     url.pathname.includes('/api/auth') ||
+    request.mode === 'navigate' ||
+    url.pathname.startsWith('/_next/') ||
+    url.pathname === '/sw.js' ||
     url.pathname.includes('/video-call') ||
     url.pathname.includes('socket')) {
     return; // Cho đi thẳng ra Internet bình thường
