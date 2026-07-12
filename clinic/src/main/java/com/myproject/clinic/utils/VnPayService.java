@@ -66,8 +66,10 @@ public class VnPayService {
         vnp_Params.put("vnp_ReturnUrl", getReturnUrl());
         vnp_Params.put("vnp_IpAddr", ipAddr);
 
-        Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
+        TimeZone paymentTimeZone = TimeZone.getTimeZone("Asia/Ho_Chi_Minh");
+        Calendar cld = Calendar.getInstance(paymentTimeZone);
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+        formatter.setTimeZone(paymentTimeZone);
 
         String vnp_CreateDate = formatter.format(cld.getTime());
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);

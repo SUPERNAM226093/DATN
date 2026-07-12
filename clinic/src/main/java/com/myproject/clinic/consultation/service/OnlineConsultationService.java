@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -29,6 +30,8 @@ public class OnlineConsultationService {
     private final OnlineConsultationRepository consultationRepository;
     private final UserRepository userRepository;
     private final DoctorRepository doctorRepository;
+    private static final ZoneId PAYMENT_TIME_ZONE = ZoneId.of("Asia/Ho_Chi_Minh");
+
     private final ClinicServiceRepository serviceRepository;
     private final SpecializationRepository specializationRepository;
     private final BookingValidationService bookingValidationService;
@@ -92,7 +95,7 @@ public class OnlineConsultationService {
                 .consultationDate(consultationDate)
                 .consultationTime(req.getConsultationTime())
                 // QUAN TRỌNG: Thiết lập thời hạn thanh toán là 15 phút kể từ lúc tạo đơn
-                .expiredAt(LocalDateTime.now().plusMinutes(15))
+                .expiredAt(LocalDateTime.now(PAYMENT_TIME_ZONE).plusMinutes(15))
                 .build();
 
         return toResponse(consultationRepository.save(consultation));
@@ -263,7 +266,7 @@ public class OnlineConsultationService {
     @Scheduled(fixedRate = 60_000)
     public void cancelExpiredConsultations() {
         // Gọi xuống Repository để cập nhật trạng thái CANCELLED hàng loạt bằng 1 câu
-        int count = consultationRepository.cancelExpiredConsultations(LocalDateTime.now());
+        int count = consultationRepository.cancelExpiredConsultations(LocalDateTime.now(PAYMENT_TIME_ZONE));
         if (count > 0) {
             log.info("[HỆ THỐNG] Đã tự động hủy {} đơn tư vấn hết hạn thanh toán.", count);
         }

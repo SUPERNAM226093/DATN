@@ -19,7 +19,17 @@ function getLoggedInUser(): AuthResponse | null {
 }
 
 function formatCountdown(expiredAt: string): string {
-    const diff = Math.max(0, new Date(expiredAt).getTime() - Date.now());
+    const now = Date.now();
+    const hasTimeZone = /(?:Z|[+-]\d{2}:?\d{2})$/.test(expiredAt);
+    const candidates = hasTimeZone
+        ? [new Date(expiredAt).getTime()]
+        : [new Date(expiredAt).getTime(), new Date(`${expiredAt}Z`).getTime()];
+    const futureCandidates = candidates
+        .filter(Number.isFinite)
+        .filter(timestamp => timestamp >= now)
+        .sort((a, b) => a - b);
+    const expiresAt = futureCandidates[0] ?? Math.max(...candidates.filter(Number.isFinite));
+    const diff = Math.max(0, expiresAt - now);
     const h = Math.floor(diff / 3_600_000);
     const m = Math.floor((diff % 3_600_000) / 60_000);
     const s = Math.floor((diff % 60_000) / 1_000);
