@@ -304,6 +304,8 @@ public class OnlineConsultationService {
         if (!"PENDING".equals(c.getPaymentStatus())) {
             throw new IllegalArgumentException("Đơn tư vấn không ở trạng thái chờ thanh toán.");
         }
+        c.setExpiredAt(LocalDateTime.now(PAYMENT_TIME_ZONE).plusMinutes(15));
+        consultationRepository.save(c);
         return vnPayService.createPaymentUrl(c.getAmount().longValue(), String.valueOf(c.getId()), ipAddr);
     }
 
@@ -328,7 +330,13 @@ public class OnlineConsultationService {
             return false;
         }
 
-        Long consultationId = Long.parseLong(txnRef);
+        Long consultationId;
+        try {
+            consultationId = Long.parseLong(txnRef.split("_", 2)[0]);
+        } catch (NumberFormatException ex) {
+            log.error("[VNPay Callback] M? tham chi?u kh?ng h?p l?: {}", txnRef);
+            return false;
+        }
         OnlineConsultation c = consultationRepository.findById(consultationId).orElse(null);
         if (c == null) {
             log.error("[VNPay Callback] Không tìm thấy đơn tư vấn ID: {}", consultationId);

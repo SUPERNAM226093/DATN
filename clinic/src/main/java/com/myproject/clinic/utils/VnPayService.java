@@ -62,10 +62,12 @@ public class VnPayService {
      */
     public String createPaymentUrl(long amount, String txnRef, String ipAddr) {
         String vnp_Version = "2.1.0";
+        ZonedDateTime createdAt = ZonedDateTime.now(PAYMENT_TIME_ZONE).withNano(0);
+        ZonedDateTime expiresAt = createdAt.plus(Duration.ofMinutes(15));
         String vnp_Command = "pay";
         String vnp_OrderInfo = "Thanh toan don hang:" + txnRef;
         String vnp_OrderType = "other";
-        String vnp_TxnRef = txnRef;
+        String vnp_TxnRef = txnRef + "_" + System.currentTimeMillis();
 
         Map<String, String> vnp_Params = new HashMap<>();
         vnp_Params.put("vnp_Version", vnp_Version);
@@ -80,8 +82,6 @@ public class VnPayService {
         vnp_Params.put("vnp_ReturnUrl", getReturnUrl());
         vnp_Params.put("vnp_IpAddr", ipAddr);
 
-        ZonedDateTime createdAt = ZonedDateTime.now(PAYMENT_TIME_ZONE).withNano(0);
-        ZonedDateTime expiresAt = createdAt.plus(Duration.ofMinutes(15));
         vnp_Params.put("vnp_CreateDate", VNPAY_DATE_FORMAT.format(createdAt));
         vnp_Params.put("vnp_ExpireDate", VNPAY_DATE_FORMAT.format(expiresAt));
 
