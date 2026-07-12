@@ -86,7 +86,7 @@ class AppointmentServiceTest {
         Doctor doctor = Doctor.builder().id(1L).user(doctorUser).build();
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(patient));
-        when(doctorRepository.findById(1L)).thenReturn(Optional.of(doctor));
+        when(doctorRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(doctor));
         when(appointmentRepository.save(any())).thenReturn(createAppointment());
 
         AppointmentRequest request = AppointmentRequest.builder()
